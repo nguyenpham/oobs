@@ -10,7 +10,7 @@
 		B1D679322818454000EC6DA3 /* core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D679312818454000EC6DA3 /* core.cpp */; };
 		B1D679352819FF8600EC6DA3 /* search.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D679332819FF8600EC6DA3 /* search.cpp */; };
 		B1D6793B281C188400EC6DA3 /* book.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D67939281C188400EC6DA3 /* book.cpp */; };
-		B1D6793E281CD8E000EC6DA3 /* mem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D6793C281CD8E000EC6DA3 /* mem.cpp */; };
+		B1D679412822C1FA00EC6DA3 /* bench.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D6793F2822C1FA00EC6DA3 /* bench.cpp */; };
 		B1E693A927525E1000997777 /* base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1E6938427525E1000997777 /* base.cpp */; };
 		B1E693AA27525E1000997777 /* chess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1E6938527525E1000997777 /* chess.cpp */; };
 		B1E693AB27525E1000997777 /* funcs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1E6938627525E1000997777 /* funcs.cpp */; };
@@ -53,8 +53,8 @@
 		B1D679342819FF8600EC6DA3 /* search.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = search.h; sourceTree = "<group>"; };
 		B1D67939281C188400EC6DA3 /* book.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = book.cpp; sourceTree = "<group>"; };
 		B1D6793A281C188400EC6DA3 /* book.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = book.h; sourceTree = "<group>"; };
-		B1D6793C281CD8E000EC6DA3 /* mem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mem.cpp; sourceTree = "<group>"; };
-		B1D6793D281CD8E000EC6DA3 /* mem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mem.h; sourceTree = "<group>"; };
+		B1D6793F2822C1FA00EC6DA3 /* bench.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = bench.cpp; sourceTree = "<group>"; };
+		B1D679402822C1FA00EC6DA3 /* bench.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bench.h; sourceTree = "<group>"; };
 		B1E693732752571200997777 /* oobs */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = oobs; sourceTree = BUILT_PRODUCTS_DIR; };
 		B1E6937D27525E1000997777 /* SqlCmd.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = SqlCmd.md; path = ../SqlCmd.md; sourceTree = "<group>"; };
 		B1E6937E27525E1000997777 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
@@ -166,8 +166,8 @@
 				B1E6938D27525E1000997777 /* bookmaker.h */,
 				B1F41EA52816461A00A0B897 /* bookrecords.h */,
 				B1F41EA628175E0500A0B897 /* bookrecords.cpp */,
-				B1D6793C281CD8E000EC6DA3 /* mem.cpp */,
-				B1D6793D281CD8E000EC6DA3 /* mem.h */,
+				B1D6793F2822C1FA00EC6DA3 /* bench.cpp */,
+				B1D679402822C1FA00EC6DA3 /* bench.h */,
 			);
 			name = src;
 			path = ../src;
@@ -318,6 +318,7 @@
 				B1E693AC27525E1000997777 /* chesstypes.cpp in Sources */,
 				B1E693B727525E1000997777 /* main.cpp in Sources */,
 				B1E693AB27525E1000997777 /* funcs.cpp in Sources */,
+				B1D679412822C1FA00EC6DA3 /* bench.cpp in Sources */,
 				B1E693B227525E1000997777 /* Statement.cpp in Sources */,
 				B1E693AF27525E1000997777 /* Column.cpp in Sources */,
 				B1E693B027525E1000997777 /* Savepoint.cpp in Sources */,
@@ -327,7 +328,6 @@
 				B1D6793B281C188400EC6DA3 /* book.cpp in Sources */,
 				B1F41EA728175E0500A0B897 /* bookrecords.cpp in Sources */,
 				B1D679322818454000EC6DA3 /* core.cpp in Sources */,
-				B1D6793E281CD8E000EC6DA3 /* mem.cpp in Sources */,
 				B1F41EA428162ABC00A0B897 /* report.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

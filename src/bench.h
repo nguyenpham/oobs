@@ -8,24 +8,20 @@
  * or copy at http://opensource.org/licenses/MIT)
  */
 
-#ifndef OOBS_SEARCH_H
-#define OOBS_SEARCH_H
+#ifndef OOBS_BENCH_H
+#define OOBS_BENCH_H
 
-#include "dbread.h"
-#include "pgnread.h"
+#include "search.h"
 
 namespace oobs {
 
 
-class Search : public ocgdb::DbRead
+class Bench : public Search
 {
-protected:
-    void queryADb(const std::string& dbPath, const std::vector<std::string>& fenVec);
-    void queryAPolyglot(const std::string& dbPath, const std::vector<std::string>& fenVec);
-
+private:
     virtual void runTask() override;
 };
 
 } // namespace ocdb
 
-#endif /* OOBS_SEARCH_H */
+#endif /* OOBS_BENCH_H */

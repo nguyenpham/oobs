@@ -1,8 +1,8 @@
 /**
  * This file is part of Open Opening Book Standard.
  *
- * Copyright (c) 2021 Nguyen Pham (github@nguyenpham)
- * Copyright (c) 2021 Developers
+ * Copyright (c) 2022 Nguyen Pham (github@nguyenpham)
+ * Copyright (c) 2022 Developers
  *
  * Distributed under the MIT License (MIT) (See accompanying file LICENSE.txt
  * or copy at http://opensource.org/licenses/MIT)
@@ -11,6 +11,7 @@
 #include <iostream>
 #include "bookmaker.h"
 #include "search.h"
+#include "bench.h"
 
 #include "board/chess.h"
 
@@ -33,6 +34,11 @@ void runTask(ocgdb::ParaRecord& param)
         case ocgdb::Task::query:
         {
             dbCore = new oobs::Search;
+            break;
+        }
+        case ocgdb::Task::bench:
+        {
+            dbCore = new oobs::Bench;
             break;
         }
 

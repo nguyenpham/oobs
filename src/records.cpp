@@ -79,6 +79,7 @@ bool ParaRecord::isValid() const
         }
 
         case Task::query:
+        case Task::bench:
             if (!bookCnt) {
                 errorString = "Must have at least one book (.obs.db3/.bin)  path. Mising or wrong parameter -book";
                 return false;
@@ -239,7 +240,7 @@ void ThreadRecord::boardToNodes(std::map<uint64_t, oobs::BookNode>& nodeMap, con
     board2->newGame(board->getStartingFen());
     for(auto i = 0, e = std::min(paraRecord.ply_take, n); i < e; i++) {
         auto hashKey = board2->hashKey;
-        auto fenString = board2->getFen(0, 1);
+        auto epdString = bslib::Funcs::FEN2EPD(board2->getFen());
 
         auto hist = board->getHistAt(i);
         
@@ -248,11 +249,11 @@ void ThreadRecord::boardToNodes(std::map<uint64_t, oobs::BookNode>& nodeMap, con
         auto moveString = hist.move.toCoordinateString(board2->variant);
         
         auto node = &nodeMap[hashKey];
-        if (node->fen.empty()) {
+        if (node->epd.empty()) {
             nodeCnt++;
-            node->fen = fenString;
+            node->epd = epdString;
         } else {
-            assert(node->fen == fenString);
+            assert(node->epd == epdString);
         }
         
         auto moveInt = oobs::MoveWDL::move2Int(hist.move.from, hist.move.dest, hist.move.promotion, hist.castled);

@@ -1,8 +1,8 @@
 /**
  * This file is part of Open Opening Book Standard.
  *
- * Copyright (c) 2021 Nguyen Pham (github@nguyenpham)
- * Copyright (c) 2021 Developers
+ * Copyright (c) 2022 Nguyen Pham (github@nguyenpham)
+ * Copyright (c) 2022 Developers
  *
  * Distributed under the MIT License (MIT) (See accompanying file LICENSE.txt
  * or copy at http://opensource.org/licenses/MIT)
@@ -29,26 +29,25 @@ void Search::runTask()
     }
     
     assert(paraRecord.task == ocgdb::Task::query);
+    paraRecord.optionFlag |= ocgdb::query_flag_print_all;
 
     gameCnt = 0; errCnt = 0; succCount = 0;
 
     std::vector<std::string> fenVec;
     for(auto && query : paraRecord.queries) {
-        auto s = bslib::Funcs::standardFENString(query);
+        auto s = bslib::Funcs::FEN2EPD(query);
         if (!s.empty()) {
             fenVec.push_back(s);
         }
     }
 
     // Query databases
-    if (!paraRecord.bookPaths.empty()) {
-        for(auto && dbPath : paraRecord.bookPaths) {
-            if (bslib::Funcs::endsWith(dbPath, ".db3")) {
-                queryADb(dbPath, fenVec);
-            }
-            else if (bslib::Funcs::endsWith(dbPath, ".bin")) {
-                queryAPolyglot(dbPath, fenVec);
-            }
+    for(auto && dbPath : paraRecord.bookPaths) {
+        if (bslib::Funcs::endsWith(dbPath, ".db3")) {
+            queryADb(dbPath, fenVec);
+        }
+        else if (bslib::Funcs::endsWith(dbPath, ".bin")) {
+            queryAPolyglot(dbPath, fenVec);
         }
     }
 }
@@ -56,7 +55,7 @@ void Search::runTask()
 
 void Search::queryADb(const std::string& dbPath, const std::vector<std::string>& fenVec)
 {
-    std::cout << "Processing a database: '" << dbPath << "'" << std::endl;
+    std::cout << "Querying a database: '" << dbPath << "'" << std::endl;
 
     if (!_openDB(dbPath)) {
         return;
@@ -68,20 +67,22 @@ void Search::queryADb(const std::string& dbPath, const std::vector<std::string>&
         SQLite::Statement stmt(*mDb, sqlString);
         
         for (gameCnt = 0; stmt.executeStep(); ++gameCnt) {
+            std::string str;
             for(int i = 0, cnt = stmt.getColumnCount(); i < cnt; ++i) {
                 auto c = stmt.getColumn(i);
                 std::string name = c.getName();
-                std::cout << name << ": " << c.getString() << ", ";
+                str += name + ": " + c.getString() + ", ";
             }
-            
-            std::cout << std::endl;
+            if (paraRecord.optionFlag & ocgdb::query_flag_print_all) {
+                std::cout << str << std::endl;
+            }
         }
     }
 }
 
 void Search::queryAPolyglot(const std::string& dbPath, const std::vector<std::string>& fenVec)
 {
-    std::cout << "Processing a Polyglot: '" << dbPath << "'" << std::endl;
+    std::cout << "Querying a Polyglot: '" << dbPath << "'" << std::endl;
 
     bslib::BookPolyglot book;
     
@@ -93,7 +94,7 @@ void Search::queryAPolyglot(const std::string& dbPath, const std::vector<std::st
     auto board = bslib::Funcs::createBoard(bslib::ChessVariant::standard);
     
     for(auto && fenString : fenVec) {
-        std::cout << "FEN: " << fenString << std::endl;
+        std::string str = "FEN: " + fenString + "\n";
 
         board->newGame(fenString);
         
@@ -102,12 +103,14 @@ void Search::queryAPolyglot(const std::string& dbPath, const std::vector<std::st
         
         for(auto && item : vec) {
             auto move = item.getMove(board);
-            std::cout << "key: " << item.key
-            << ", move: " << bslib::Move::toChessCoordinateString(move.from, move.dest, move.promotion)
-            << ", weight: " << item.weight
-            << ", learn: " << item.learn
-            << std::endl;
-
+            str += "key: " + std::to_string(item.key)
+                + ", move: " + bslib::Move::toChessCoordinateString(move.from, move.dest, move.promotion)
+                + ", weight: " + std::to_string(item.weight)
+                + ", learn: " + std::to_string(item.learn);
+            
+            if (paraRecord.optionFlag & ocgdb::query_flag_print_all) {
+                std::cout << str << std::endl;
+            }
         }
    }
 }

@@ -85,11 +85,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-db /Users/nguyenpham/Downloads/mb-3.45.ocgdb.db3"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-db /Users/nguyenpham/Downloads/345.ocgdb.db3"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-pgn /Users/nguyenpham/bsg/BanksiaMatch/db/mb-3.45.pgn"
@@ -98,6 +98,10 @@
          <CommandLineArgument
             argument = "-create"
             isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-bench"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-plytake 30"

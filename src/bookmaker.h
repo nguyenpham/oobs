@@ -1,8 +1,8 @@
 /**
  * This file is part of Open Opening Book Standard.
  *
- * Copyright (c) 2021 Nguyen Pham (github@nguyenpham)
- * Copyright (c) 2021 Developers
+ * Copyright (c) 2022 Nguyen Pham (github@nguyenpham)
+ * Copyright (c) 2022 Developers
  *
  * Distributed under the MIT License (MIT) (See accompanying file LICENSE.txt
  * or copy at http://opensource.org/licenses/MIT)
@@ -60,7 +60,7 @@ private:
     std::map<uint64_t, oobs::BookNode> nodeMap;
 
     // Prepared statements
-    SQLite::Statement *insertStatement = nullptr, *insertFENStatement = nullptr;
+    SQLite::Statement *insertStatement = nullptr, *insertEPDStatement = nullptr;
 
     uint64_t itemCnt, discardCnt;
 

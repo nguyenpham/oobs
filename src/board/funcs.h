@@ -50,7 +50,7 @@ public:
     static bool endsWith(const std::string& str, const std::string& suffix);
     static bool startsWith(const std::string& str, const std::string& prefix);
     // change halfmove clock to 0 and fullmove number to 1
-    static std::string standardFENString(std::string fenString);
+    static std::string FEN2EPD(std::string fenString);
 
 
     static std::vector<std::string> splitString(const std::string &s, char delim);

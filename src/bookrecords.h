@@ -1,8 +1,8 @@
 /**
  * This file is part of Open Opening Book Standard.
  *
- * Copyright (c) 2021 Nguyen Pham (github@nguyenpham)
- * Copyright (c) 2021 Developers
+ * Copyright (c) 2022 Nguyen Pham (github@nguyenpham)
+ * Copyright (c) 2022 Developers
  *
  * Distributed under the MIT License (MIT) (See accompanying file LICENSE.txt
  * or copy at http://opensource.org/licenses/MIT)
@@ -56,13 +56,13 @@ public:
 
 class BookNode {
 public:
-    std::string fen;
+    std::string epd;
     
     // map move int to BookNodeMove
     std::unordered_map<int, WinDrawLoss> moveMap;
 
     bool isValid() const {
-        if (fen.empty()) {
+        if (epd.empty()) {
             return false;
         }
         
@@ -83,7 +83,7 @@ public:
     }
     
     void addFrom(const BookNode& node) {
-        assert(fen == node.fen);
+        assert(epd == node.epd);
         assert(node.isValid());
 
         for(auto && m : node.moveMap) {
@@ -99,7 +99,7 @@ public:
     }
     
     bool isWhite() const {
-        return fen.find(" w ") != std::string::npos;
+        return epd.find(" w ") != std::string::npos;
     }
 };
 

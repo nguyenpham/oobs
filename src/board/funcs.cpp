@@ -350,21 +350,18 @@ bool Funcs::startsWith(const std::string& str, const std::string& prefix)
 }
 
 // change halfmove clock to 0 and fullmove number to 1
-std::string Funcs::standardFENString(std::string fenString)
+std::string Funcs::FEN2EPD(std::string fenString)
 {
     bslib::Funcs::trim(fenString);
 
-    size_t k = 0;
-    for(int i = 0; i < 3; i++) {
-        k = fenString.find(k, ' ');
-        if (k == std::string::npos) {
-            break;
+    for(size_t i = 0, sz = fenString.size(), n = 0; i < sz; i++) {
+        if (fenString.at(i) != ' ') {
+            continue;
         }
-        k++;
-        if (k == 3) {
-            auto s = fenString.substr(0, k + 1);
-            return s + "0 1";
+        if (n == 3) {
+            return fenString.substr(0, i);
         }
+        n++;
     }
 
     return fenString;

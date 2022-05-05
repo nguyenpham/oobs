@@ -1,8 +1,8 @@
 /**
  * This file is part of Open Opening Book Standard.
  *
- * Copyright (c) 2021 Nguyen Pham (github@nguyenpham)
- * Copyright (c) 2021 Developers
+ * Copyright (c) 2022 Nguyen Pham (github@nguyenpham)
+ * Copyright (c) 2022 Developers
  *
  * Distributed under the MIT License (MIT) (See accompanying file LICENSE.txt
  * or copy at http://opensource.org/licenses/MIT)
@@ -89,16 +89,16 @@ bool BookMaker::createBook()
         // prepared statements
         if (bookDb) {
             if (two_tableMode) {
-                const std::string fenSql = "INSERT INTO FEN (ID, FEN) VALUES (:ID, :FEN)";
-                insertFENStatement = new SQLite::Statement(*bookDb, fenSql);
+                const std::string fenSql = "INSERT INTO EPD (ID, EPD) VALUES (:ID, :EPD)";
+                insertEPDStatement = new SQLite::Statement(*bookDb, fenSql);
 
-                const std::string sql = "INSERT INTO Book (FENID, Move, Win, Draw, Loss) "
-                "VALUES (:FENID, :Move, :Win, :Draw, :Loss)";
+                const std::string sql = "INSERT INTO Book (EPDID, Move, Win, Draw, Loss) "
+                "VALUES (:EPDID, :Move, :Win, :Draw, :Loss)";
 
                 insertStatement = new SQLite::Statement(*bookDb, sql);
             } else {
-                const std::string sql = "INSERT INTO Book (FEN, Move, Win, Draw, Loss) "
-                "VALUES (:FEN, :Move, :Win, :Draw, :Loss)";
+                const std::string sql = "INSERT INTO Book (EPD, Move, Win, Draw, Loss) "
+                "VALUES (:EPD, :Move, :Win, :Draw, :Loss)";
                 insertStatement = new SQLite::Statement(*bookDb, sql);
             }
 
@@ -173,12 +173,12 @@ SQLite::Database* BookMaker::createBookDb(const std::string& path, const std::st
         db->exec("DROP TABLE IF EXISTS Book");
 
         if (two_tableMode) {
-            db->exec("DROP TABLE IF EXISTS FEN");
-            db->exec("CREATE TABLE FEN (ID INTEGER PRIMARY KEY AUTOINCREMENT, FEN TEXT NOT NULL)");
+            db->exec("DROP TABLE IF EXISTS EPD");
+            db->exec("CREATE TABLE EPD (ID INTEGER PRIMARY KEY AUTOINCREMENT, EPD TEXT NOT NULL)");
 
-            db->exec("CREATE TABLE Book (ID INTEGER PRIMARY KEY AUTOINCREMENT, FENID INTEGER NOT NULL, Move TEXT, Active INTEGER DEFAULT 1, Win INTEGER, Draw INTEGER, Loss INTEGER, FOREIGN KEY(FENID) REFERENCES FEN)");
+            db->exec("CREATE TABLE Book (ID INTEGER PRIMARY KEY AUTOINCREMENT, EPDID INTEGER NOT NULL, Move TEXT, Active INTEGER DEFAULT 1, Win INTEGER, Draw INTEGER, Loss INTEGER, FOREIGN KEY(EPDID) REFERENCES EPD)");
         } else {
-            db->exec("CREATE TABLE Book (ID INTEGER PRIMARY KEY AUTOINCREMENT, FEN TEXT NOT NULL, Move TEXT, Active INTEGER DEFAULT 1, Win INTEGER, Draw INTEGER, Loss INTEGER, Comment TEXT)");
+            db->exec("CREATE TABLE Book (ID INTEGER PRIMARY KEY AUTOINCREMENT, EPD TEXT NOT NULL, Move TEXT, Active INTEGER DEFAULT 1, Win INTEGER, Draw INTEGER, Loss INTEGER, Comment TEXT)");
         }
 
         db->exec("PRAGMA journal_mode=OFF");
@@ -352,9 +352,9 @@ void BookMaker::toBook()
             insertStatement = nullptr;
         }
         
-        if (insertFENStatement) {
-            delete insertFENStatement;
-            insertFENStatement = nullptr;
+        if (insertEPDStatement) {
+            delete insertEPDStatement;
+            insertEPDStatement = nullptr;
         }
     }
 
@@ -396,19 +396,19 @@ void BookMaker::add(int& fenID, uint64_t key, const BookNode& node)
     if (polyglotMode) {
         add2Polyglot(key, moveWDLVec, node.isWhite());
     } else {
-        add2Db(fenID, node.fen, moveWDLVec);
+        add2Db(fenID, node.epd, moveWDLVec);
     }
 
     fenID++;
 }
 
-void BookMaker::add2Db(int& fenID, const std::string& fenString, const std::vector<MoveWDL>& moveWDLVec)
+void BookMaker::add2Db(int& epdID, const std::string& epdString, const std::vector<MoveWDL>& moveWDLVec)
 {
     if (two_tableMode) {
-        insertFENStatement->reset();
-        insertFENStatement->bind(":ID", fenID);
-        insertFENStatement->bind(":FEN", fenString);
-        if (insertFENStatement->exec() != 1) {
+        insertEPDStatement->reset();
+        insertEPDStatement->bind(":ID", epdID);
+        insertEPDStatement->bind(":EPD", epdString);
+        if (insertEPDStatement->exec() != 1) {
             return; // something wrong
         }
     }
@@ -417,9 +417,9 @@ void BookMaker::add2Db(int& fenID, const std::string& fenString, const std::vect
         insertStatement->reset();
 
         if (two_tableMode) {
-            insertStatement->bind(":FENID", fenID);
+            insertStatement->bind(":EPDID", epdID);
         } else {
-            insertStatement->bind(":FEN", fenString);
+            insertStatement->bind(":EPD", epdString);
         }
 
         insertStatement->bind(":Move", mwdl.toChessCoordinateString());
