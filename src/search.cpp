@@ -53,7 +53,7 @@ void Search::runTask()
 }
 
 
-void Search::queryADb(const std::string& dbPath, const std::vector<std::string>& fenVec)
+void Search::queryADb(const std::string& dbPath, const std::vector<std::string>& epdVec)
 {
     std::cout << "Querying a database: '" << dbPath << "'" << std::endl;
 
@@ -61,8 +61,8 @@ void Search::queryADb(const std::string& dbPath, const std::vector<std::string>&
         return;
     }
 
-    for(auto && fenString : fenVec) {
-        auto sqlString = "SELECT * FROM Book WHERE FEN='" + fenString + "'";
+    for(auto && epdString : epdVec) {
+        auto sqlString = "SELECT * FROM Book WHERE EPD='" + epdString + "'";
         
         SQLite::Statement stmt(*mDb, sqlString);
         
@@ -80,7 +80,7 @@ void Search::queryADb(const std::string& dbPath, const std::vector<std::string>&
     }
 }
 
-void Search::queryAPolyglot(const std::string& dbPath, const std::vector<std::string>& fenVec)
+void Search::queryAPolyglot(const std::string& dbPath, const std::vector<std::string>& epdVec)
 {
     std::cout << "Querying a Polyglot: '" << dbPath << "'" << std::endl;
 
@@ -93,10 +93,10 @@ void Search::queryAPolyglot(const std::string& dbPath, const std::vector<std::st
 
     auto board = bslib::Funcs::createBoard(bslib::ChessVariant::standard);
     
-    for(auto && fenString : fenVec) {
-        std::string str = "FEN: " + fenString + "\n";
+    for(auto && epdString : epdVec) {
+        std::string str = "EPD: " + epdString + "\n";
 
-        board->newGame(fenString);
+        board->newGame(epdString);
         
         auto vec = book.search(board->key());
         if (vec.empty()) continue;
