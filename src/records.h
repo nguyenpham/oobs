@@ -25,7 +25,7 @@
 
 namespace ocgdb {
 
-// Developer may change this string
+// Developer may change those string
 const std::string VersionUserDatabaseString = "0.1";
 
 const std::string VersionString = "Beta 8";
@@ -65,18 +65,23 @@ enum {
     lichess_flag_nobot                  = 1 << 20,
     lichess_flag_bot                    = 1 << 21,
 
+    flag_noresult_win                   = 1 << 25,
+    flag_noresult_draw                  = 1 << 26,
+    flag_noresult_loss                  = 1 << 27,
+
+    flag_pgn_unique_lastpos             = 1 << 29,
 };
 
 class ParaRecord
 {
 public:
-    std::vector<std::string> pgnPaths, dbPaths, bookPaths, queries;
+    std::vector<std::string> inputPaths, outputPaths, queries;
     std::string reportPath, desc;
 
     int optionFlag = 0;
 
     Task task = Task::none;
-    int cpuNumber = -1, limitElo = 0, limitLen = 0, ply_take = 40, gamepernode = 1;
+    int cpuNumber = -1, limitElo = 0, limitLen = 0, ply_take = 40, ply_delta = 2, gamepernode = 1;
     
     int winfactor = 2, drawfactor = 1, lossfactor = 0;
     

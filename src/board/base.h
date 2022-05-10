@@ -337,8 +337,8 @@ namespace bslib {
         virtual std::string getFen() const;
         virtual std::string getFen(int halfCount, int fullMoveCount) const = 0;
 
-        virtual std::string getEPD() const;
-        virtual std::string getEPD(const Hist&) const;
+        virtual std::string getEPD(bool withRecords = false) const;
+        virtual std::string getEPD(bool withRecords, const Hist&) const;
 
         virtual uint64_t initHashKey() const = 0;
         
@@ -351,6 +351,7 @@ namespace bslib {
         bool equalMoveLists(const BoardCore*, bool embeded) const;
         
         virtual std::string getLastEcoString() const = 0;
+        virtual std::string getLastFullEcoString() const = 0;
 
     public:
         bool fromOriginPosition() const;

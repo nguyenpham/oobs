@@ -22,6 +22,8 @@
 
 namespace oobs {
 
+const std::string VersionString = "beta 1";
+const std::string VersionDatabaseString = "0.1";
 
 class WinDrawLoss {
 public:

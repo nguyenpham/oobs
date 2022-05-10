@@ -320,7 +320,22 @@ bool DbRead::readADb(const std::string& dbPath, const std::string& sqlString)
 
             record.gameID = statement.getColumn("ID").getInt();
             record.fenText = statement.getColumn("FEN").getText();
-            record.result = statement.getColumn("Result").getText();
+            std::string resultString = statement.getColumn("Result").getText();
+            
+            if (resultString.empty()) {
+                if (paraRecord.optionFlag & ocgdb::flag_noresult_win) {
+                    resultString = "1-0";
+                } else if (paraRecord.optionFlag & ocgdb::flag_noresult_draw) {
+                    resultString = "0.5-0.5";
+                } else if (paraRecord.optionFlag & ocgdb::flag_noresult_loss) {
+                    resultString = "0-1";
+                } else {
+                    continue;
+                }
+            }
+
+            record.result = resultString;
+
             std::vector<int8_t> moveVec;
 
             if (searchField == SearchField::moves) {

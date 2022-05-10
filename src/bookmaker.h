@@ -23,14 +23,18 @@
 
 namespace oobs {
 
+enum class CreateBookType {
+    obs, polyglot, pgn, epd, none
+};
+
 
 class BookMaker : public ocgdb::DbRead, public ocgdb::PGNRead
 {
 public:
     virtual void runTask() override;
 
-    void create();
-
+    void createBook();
+    
 private:
     static SQLite::Database* createBookDb(const std::string& path, const std::string& dbDescription);
 
@@ -42,15 +46,19 @@ private:
     void updateInfoTable();
 
 private:
-    bool createBook();
+    bool createBookFile();
 
     void toBook();
+    void toBookPgnEpd(bslib::BoardCore* board, std::set<uint64_t>& vistedSet);
+    void savePgnEpd(bslib::BoardCore* board);
+
     void threadAddGame(const std::unordered_map<char*, char*>& itemMap, const char* moveText);
 
     void add(int& fenID, uint64_t key, const BookNode&);
     void add2Db(int& fenID, const std::string& fenString, const std::vector<MoveWDL>&);
     void add2Polyglot(uint64_t hashKey, std::vector<MoveWDL>&, bool isWhite);
     int scoreForPolyglot(const WinDrawLoss& a, bool isWhite) const;
+    void setupRandonSavingPly();
 
 private:
     const int Transaction2Comit = 512 * 1024;
@@ -58,15 +66,18 @@ private:
 
     std::mutex nodeMapMutex;
     std::map<uint64_t, oobs::BookNode> nodeMap;
+    std::set<std::string> lastEpdSet;
+    int randomSavingPly;
 
     // Prepared statements
     SQLite::Statement *insertStatement = nullptr, *insertEPDStatement = nullptr;
 
     uint64_t itemCnt, discardCnt;
+    double polyglotScaleFactor = 1.0;
 
-    bool polyglotMode = false;
+    CreateBookType bookType = CreateBookType::obs;
 
-    std::ofstream polyglotFile;
+    std::ofstream textBookFile;
 };
 
 

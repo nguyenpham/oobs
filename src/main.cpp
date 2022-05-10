@@ -58,7 +58,8 @@ void printConflictedTasks(ocgdb::Task task0, ocgdb::Task task1)
 }
 
 int main(int argc, const char * argv[]) {
-    std::cout << "Open Opening Book Standard - Book maker (C) 2022\n";
+    std::cout   << "Open Opening Book Standard - Book maker (C) 2022, ver "
+                << oobs::VersionString << std::endl;
     
     if (argc < 2) {
         print_usage();
@@ -107,16 +108,12 @@ int main(int argc, const char * argv[]) {
             paraRecord.cpuNumber = std::atoi(argv[++i]);
             continue;
         }
-        if (str == "-pgn") {
-            paraRecord.pgnPaths.push_back(std::string(argv[++i]));
+        if (str == "-in") {
+            paraRecord.inputPaths.push_back(std::string(argv[++i]));
             continue;
         }
-        if (str == "-db") {
-            paraRecord.dbPaths.push_back(std::string(argv[++i]));
-            continue;
-        }
-        if (str == "-book") {
-            paraRecord.bookPaths.push_back(std::string(argv[++i]));
+        if (str == "-out") {
+            paraRecord.outputPaths.push_back(std::string(argv[++i]));
             continue;
         }
 
@@ -124,11 +121,11 @@ int main(int argc, const char * argv[]) {
             paraRecord.limitElo = std::atoi(argv[++i]);
             continue;
         }
-        if (str == "-wdl") {
-            auto string = std::string(argv[++i]);
-            paraRecord.setWDLFactors(string);
-            continue;
-        }
+//        if (str == "-wdl") {
+//            auto string = std::string(argv[++i]);
+//            paraRecord.setWDLFactors(string);
+//            continue;
+//        }
         if (str == "-o") {
             auto string = std::string(argv[++i]);
             paraRecord.setupOptions(string);
@@ -140,6 +137,10 @@ int main(int argc, const char * argv[]) {
         }
         if (str == "-plytake") {
             paraRecord.ply_take = std::atoi(argv[++i]);
+            continue;
+        }
+        if (str == "-plydelta") {
+            paraRecord.ply_delta = std::atoi(argv[++i]);
             continue;
         }
         if (str == "-gamepernode") {
@@ -189,32 +190,45 @@ void print_usage()
     "Usage:\n" \
     " oobs [<parameters>]\n" \
     "\n" \
-    " -create               create a new database from multi PGN files, works with -book, -db, -pgn\n" \
-    " -book <file>          opening book file, repeat to add multi files. Extensions should be .obs.db3 for SQLite format, .bin for Polyglot\n" \
-    " -pgn <file>           PGN game database file, repeat to add multi files\n" \
-    " -db <file>            database file in OCGDB format, extension should be .ocgdb.db3, repeat to add multi files\n" \
+    " -create               task: create a new book from multi PGN/OCGDB files, works with -in, -out\n" \
+    " -q <EPD>              task: query info of EPDs for OOBS (.obs.db3), repeat to add multi files, works with -in\n" \
+    " -bench                task: benchmark for OOBS (.obs.db3), works with -in\n" \
+    " -in <path>            input path, repeat to add multi files. For task:\n" \
+    "                       -create: should be PGN (.pgn) or OCGDB (.ocgdb.db3) file\n" \
+    "                       -q: should be OOBS (.obs.db3) file" \
+    "                       -bench: should be OOBS (.obs.db3) or Polyglot (.bin) file\n" \
+    " -out <path>           opening book file. Extensions should be:\n" \
+    "                         OOBS: .obs.db3\n" \
+    "                         Polyglot: .bin\n" \
+    "                         PGN: .pgn\n" \
+    "                         EPD: .epd (Extended Position Description)\n" \
     " -elo <n>              discard games with Elo under n (for creating)\n" \
     " -plycount <n>         discard games with ply-count under n (for creating)\n" \
     " -plytake <n>          use first n moves to build openings\n" \
+    " -plydelta <n>         random range for plytake, use for PGN/EPD books\n" \
     " -gamepernode <n>      count node with having at least n games\n" \
-    " -wdl <w,d,l>          win, draw, loss factors for Polyglot books. Default is 2,1,0\n" \
     " -cpu <n>              number of threads, should <= total physical cores, omit it for using all cores\n" \
     " -desc \"<string>\"      a description to write to the table Info when creating a new database\n" \
+    " -o [<options>,]       options, separated by commas\n" \
+    "    discardnoelo       discard games without player Elos (for creating)\n" \
+    "    win=<n>            set win factor for Polyglot, default is 2\n" \
+    "    draw=<n>           set draw factor for Polyglot, default is 1\n" \
+    "    loss=<n>           set loss factor for Polyglot, default is 0\n" \
+    "    noresult=(discard|win|draw|loss)  how to treat games without results, default is discard\n" \
+    "    uniquelastpos      PGN books: not allow same last positions\n" \
     "\n" \
     "Examples:\n" \
-    " oobs -create -pgn big.png -book big.obs.db3 -cpu 4\n" \
-    " oobs -create -pgn big.png -book big.bin -cpu 4 -wdlfactors 3,1,0\n" \
-    " oobs -create -pgn big1.png -pgn big2.png -db big3.ocgdb.db3 -book allbig.obs.db3 -elo 2100\n" \
-    " oobs -book big.obs.db3 -q \"K7/N7/k7/8/3p4/8/N7/8 w - - 0 1\"\n" \
+    " oobs -create -in big.png -out big.obs.db3\n" \
+    " oobs -create -in big.png -out big.bin -cpu 4 -o win=3,draw=1,noresult=win\n" \
+    " oobs -create -in big1.png -in big2.ocgdb.db3 -out allbig.obs.db3 -elo 2100\n" \
+    " oobs -in big.obs.db3 -q \"K7/N7/k7/8/3p4/8/N7/8 w - - 0 1\"\n" \
     "\n" \
     "Main functions/features:\n" \
-    "1. create an opening book in formats OBS (.obs.db3), Polyglot (.bin) from multi PGN/database (.ocgdb.db3) files\n" \
-    "2. get/display all information for given FEN strings from an OBS book\n"
+    "1. create an opening book in formats OBS (.obs.db3), Polyglot (.bin), PGN (.pgn), EPD (.epd)\n" \
+    "   from multi PGN/database (.ocgdb.db3) files\n" \
+    "2. get/display all information for given EPD (Extended Position Description) strings from an OOBS (.obs) book\n"
+    "3. benchmark\n"
     ;
-
-//    " -o [<options>,]       options, separated by commas\n" \
-//    "    discardnoelo       discard games without player Elos (for creating)\n" \
-//    "    discardfen         discard games with FENs (not started from origin; for creating)\n" \
 
     std::cerr << str << std::endl;
 }

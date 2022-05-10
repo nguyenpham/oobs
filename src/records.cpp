@@ -30,47 +30,44 @@ using namespace ocgdb;
 ////////////////////////////////////////////////////////////////////////
 bool ParaRecord::isValid() const
 {
-    auto pgnCnt = 0;
-    for(auto && s : pgnPaths) {
+    auto inCnt = 0, indb3Cnt = 0;
+    for(auto && s : inputPaths) {
         if (!s.empty()) {
-            pgnCnt++;
+            inCnt++;
+            if (bslib::Funcs::endsWith(s, ".obs.db3")) {
+                indb3Cnt++;
+            }
         }
     }
 
-    auto dbCnt = 0;
-    for(auto && s : dbPaths) {
+    auto outCnt = 0;
+    for(auto && s : outputPaths) {
         if (!s.empty()) {
-            dbCnt++;
+            if (bslib::Funcs::endsWith(s, ".obs.db3") || bslib::Funcs::endsWith(s, ".bin")) {
+                outCnt++;
+            } else {
+                errorString = "Supported only Open Book Standard (.obs.db3), Polyglot (.bin). The book path must have those extensions.";
+                return false;
+            }
         }
     }
-
-    auto bookCnt = 0;
-    for(auto && s : bookPaths) {
-        if (bslib::Funcs::endsWith(s, ".obs.db3") || bslib::Funcs::endsWith(s, ".bin")) {
-            bookCnt++;
-        } else {
-            errorString = "Supported only Open Book Standard (.obs.db3), Polyglot (.bin). The book path must have those extensions.";
-            return false;
-        }
-    }
-    
 
     errorString.clear();
     auto ok = false;
     switch (task) {
         case Task::none:
         {
-            errorString = "Must set a task. Mising or wrong parameter such as -create, -merge, -export, -q, -bench, -g, -dup";
+            errorString = "Must set a task. Mising or wrong parameter such as -create, -q, -bench";
             break;
         }
         case Task::create:
         {
-            if (!pgnCnt && !dbCnt) {
-                errorString = "Must have at least one PGN/database path. Mising or wrong parameter -db -pgn";
+            if (!inCnt) {
+                errorString = "Must have at least one PGN/database path. Mising or wrong parameter -in";
                 break;
             }
-            if (bookCnt != 1) {
-                errorString = "Must have one opening book path. Mising or wrong parameter -book";
+            if (outCnt != 1) {
+                errorString = "Must have one opening book path. Mising or wrong parameter -out";
                 break;
             }
 
@@ -80,8 +77,8 @@ bool ParaRecord::isValid() const
 
         case Task::query:
         case Task::bench:
-            if (!bookCnt) {
-                errorString = "Must have at least one book (.obs.db3/.bin)  path. Mising or wrong parameter -book";
+            if (!inCnt) {
+                errorString = "Must have at least one book (.obs.db3/.bin)  path. Mising or wrong parameter -in";
                 return false;
             }
             ok = true;
@@ -98,7 +95,7 @@ bool ParaRecord::isValid() const
 static const std::map<std::string, int> optionNameMap = {
     // creating
     {"discardnoelo", 6},
-    {"discardfen", 7},
+//    {"discardfen", 7},
 
     // query
     {"printall", 10},
@@ -107,6 +104,12 @@ static const std::map<std::string, int> optionNameMap = {
 
     {"nobot", 20},
     {"bot", 21},
+
+    {"noresult=win", 25},
+    {"noresult=draw", 26},
+    {"noresult=loss", 27},
+
+    {"uniquelastpos", 29},
 };
 
 std::string ParaRecord::toString(Task task)
@@ -129,21 +132,16 @@ std::string ParaRecord::toString() const
     
     s = "\tTask: " + toString(task) + "\n";
     
-    s += "\tBook paths:\n";
-    for(auto && path : bookPaths) {
+    s += "\tInput paths:\n";
+    for(auto && path : inputPaths) {
         s += "\t\t" + path + "\n";
     }
 
-    s += "\tPGN paths:\n";
-    for(auto && path : pgnPaths) {
+    s += "\tOutput paths:\n";
+    for(auto && path : outputPaths) {
         s += "\t\t" + path + "\n";
     }
     
-    s += "\tDatabase paths:\n";
-    for(auto && path : dbPaths) {
-        s += "\t\t" + path + "\n";
-    }
-
     s += "\tQueries:\n";
     for(auto && query : queries) {
         s += "\t\t" + query + "\n";
@@ -156,11 +154,16 @@ std::string ParaRecord::toString() const
             s += it.first + ",";
         }
     }
-    
     s += "\n";
 
+    s += "\t\tPolyglot win,draw,loss factors: "
+        + std::to_string(winfactor) + ","
+        + std::to_string(drawfactor) + ","
+    + std::to_string(lossfactor) + "\n";
+    
     s += "\n";
-    s += "\tply_take: " + std::to_string(ply_take) + ", gamepernode: " + std::to_string(gamepernode) + "\n"
+    s += "\tply_take: " + std::to_string(ply_take) + ", ply_delta: " + std::to_string(ply_delta)
+        + ", gamepernode: " + std::to_string(gamepernode) + "\n"
         + "\tcpu: " + std::to_string(cpuNumber)
         + ", min Elo: " + std::to_string(limitElo)
         + ", min game length: " + std::to_string(limitLen)
@@ -176,9 +179,7 @@ void ParaRecord::setupOptions(const std::string& string)
     
     for(auto && s : vec) {
         auto it = optionNameMap.find(s);
-        if (it == optionNameMap.end()) {
-            std::cerr << "Error: Don't know option string: " << s << std::endl;
-        } else {
+        if (it != optionNameMap.end()) {
             optionFlag |= 1 << it->second;
             
             if (s == "printpgn" || s == "printfen") {
@@ -186,7 +187,25 @@ void ParaRecord::setupOptions(const std::string& string)
                 assert(it2 != optionNameMap.end());
                 optionFlag |= 1 << it2->second;
             }
+            continue;
         }
+
+        auto p = s.find("=");
+        if (p != std::string::npos &&
+            (bslib::Funcs::startsWith(s, "win=") || bslib::Funcs::startsWith(s, "draw=") || bslib::Funcs::startsWith(s, "loss="))) {
+            auto ss = s.substr(p + 1);
+            auto n = std::stoi(ss);
+            
+            if (bslib::Funcs::startsWith(s, "win=")) {
+                winfactor = n;
+            } else if (bslib::Funcs::startsWith(s, "draw=")) {
+                drawfactor = n;
+            } else {
+                lossfactor = n;
+            }
+            continue;
+        }
+        std::cerr << "Error: Don't know option string: " << s << std::endl;
     }
 }
 
@@ -238,22 +257,19 @@ void ThreadRecord::boardToNodes(std::map<uint64_t, oobs::BookNode>& nodeMap, con
 
 
     board2->newGame(board->getStartingFen());
-    for(auto i = 0, e = std::min(paraRecord.ply_take, n); i < e; i++) {
+    for(auto i = 0, e = std::min(paraRecord.ply_take + paraRecord.ply_delta + 1, n); i < e; i++) {
         auto hashKey = board2->hashKey;
-        auto epdString = bslib::Funcs::FEN2EPD(board2->getFen());
-
         auto hist = board->getHistAt(i);
         
         assert(hist.move.isValid());
 
-        auto moveString = hist.move.toCoordinateString(board2->variant);
-        
         auto node = &nodeMap[hashKey];
         if (node->epd.empty()) {
             nodeCnt++;
+            auto epdString = board2->getEPD(false);
             node->epd = epdString;
         } else {
-            assert(node->epd == epdString);
+            assert(node->epd == board2->getEPD(false));
         }
         
         auto moveInt = oobs::MoveWDL::move2Int(hist.move.from, hist.move.dest, hist.move.promotion, hist.castled);

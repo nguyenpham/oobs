@@ -2840,22 +2840,29 @@ static const std::unordered_map<uint64_t, std::string> ecoMap
     {18400753095161218296ULL, "A88;Dutch;Leningrad, main variation with c6"},{18415784667315910130ULL, "A80;Dutch, Korchnoi attack"},{18417542882991751896ULL, "C23;Bishop's opening;Calabrese counter-gambit"},{18424396128252022114ULL, "C37;KGA;Lolli gambit, Young variation"}
 };
 
-std::string ChessBoard::getLastEcoString() const
+std::string ChessBoard::getLastFullEcoString() const
 {
     std::string ecoString;
     for(auto && hist : histList) {
         auto it = ecoMap.find(hist.hashKey);
         if (it != ecoMap.end()) {
-            auto vec = Funcs::splitString(it->second, ';');
-            if (!vec.empty()) {
-                ecoString = vec.front();
-            }
+            ecoString = it->second;
         }
     }
     return ecoString;
 }
 
-
+std::string ChessBoard::getLastEcoString() const
+{
+    auto ecoString = getLastFullEcoString();
+    if (!ecoString.empty()) {
+        auto vec = Funcs::splitString(ecoString, ';');
+        if (!vec.empty()) {
+            return vec.front();
+        }
+    }
+    return "";
+}
 //////////////////////
 uint64_t ChessBoard::_posToBitboard[64];
 

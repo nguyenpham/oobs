@@ -136,6 +136,7 @@ namespace bslib {
         virtual uint64_t getHashKeyForCheckingDuplicates(int) const override;
 
         virtual std::string getLastEcoString() const override;
+        virtual std::string getLastFullEcoString() const override;
 
     protected:
         bool _quickCheck_bishop(int from, int dest, bool checkMiddle) const;

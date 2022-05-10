@@ -241,10 +241,6 @@ uint64_t PGNRead::processPgnFile(const std::string& path)
         }
     }
     
-//    if (mDb && transactionCnt > 0) {
-//        mDb->exec("COMMIT");
-//    }
-
     printStats();
 
     return gameCnt;

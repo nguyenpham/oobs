@@ -41,26 +41,27 @@ std::string BoardCore::getFen() const
     return getFen(quietCnt / 2, k);
 }
 
-std::string BoardCore::getEPD() const
+std::string BoardCore::getEPD(bool withRecords) const
 {
     auto hist = histList.empty() ? Hist() : getLastHist();
-    return getEPD(hist);
+    return getEPD(withRecords, hist);
 }
 
-std::string BoardCore::getEPD(const Hist& hist) const
+std::string BoardCore::getEPD(bool withRecords, const Hist& hist) const
 {
     auto str = getFen(-1, -1);
 
-    auto k = std::max<int>(fullMoveCnt, (histList.size() + 1) / 2);
+    if (withRecords) {
+        auto k = std::max<int>(fullMoveCnt, (histList.size() + 1) / 2);
 
-    // hmvc halfmove clock, fmvn fullmove number
-    str += " hmvc " + std::to_string(quietCnt / 2) + "; fmvn " + std::to_string(k) + ";";
+        // hmvc halfmove clock, fmvn fullmove number
+        str += " hmvc " + std::to_string(quietCnt / 2) + "; fmvn " + std::to_string(k) + ";";
 
-    if (!hist.esVec.empty()) {
-        auto es = hist.esVec.begin();
-        str += es->toEPDString();
+        if (!hist.esVec.empty()) {
+            auto es = hist.esVec.begin();
+            str += es->toEPDString();
+        }
     }
-
     return str;
 }
 
@@ -1072,30 +1073,30 @@ std::string BoardCore::toMoveListString(Notation notation, int itemPerLine, bool
 std::string BoardCore::toMoveListString(const std::vector<Hist>& histList, ChessVariant variant, Notation notation, int itemPerLine, bool moveCounter,
                                         CommentComputerInfoType computerInfoType, bool pawnUnit, int precision)
 {
-    std::ostringstream stringStream;
+    std::string str;
     
     auto c = 0;
     for(size_t i = 0, k = 0; i < histList.size(); i++, k++) {
         auto hist = histList.at(i);
         if (i == 0 && hist.move.piece.side == Side::black) k++; // counter should be from event number
         
-        if (c) stringStream << " ";
+        if (c) str += " ";
         if (moveCounter && (k & 1) == 0) {
-            stringStream << (1 + k / 2) << ".";
+            str += std::to_string(1 + k / 2) + ".";
         }
         
         switch (notation) {
             case Notation::san:
-                stringStream << hist.sanString;
+                str += hist.sanString;
                 break;
                 
             case Notation::lan:
-                stringStream << BoardCore::toString_lan(hist.move, variant);
+                str += BoardCore::toString_lan(hist.move, variant);
                 break;
             case Notation::algebraic_coordinate:
             default:
                 if (Funcs::isChessFamily(variant)) {
-                    stringStream << ChessBoard::moveString_coordinate(hist.move);
+                    str += ChessBoard::moveString_coordinate(hist.move);
                 } else {
                 }
                 break;
@@ -1107,43 +1108,43 @@ std::string BoardCore::toMoveListString(const std::vector<Hist>& histList, Chess
             auto s = hist.computingString(computerInfoType, pawnUnit, precision);
             if (!s.empty()) {
                 haveComment = true;
-                stringStream << " {" << s;
+                str += " {" + s;
             }
         }
 
         if (!hist.comment.empty() && moveCounter) {
-            stringStream << (haveComment ? "; " : " {");
+            str += (haveComment ? "; " : " {");
             
             haveComment = true;
-            stringStream << hist.comment ;
+            str += hist.comment ;
         }
         
         if (haveComment) {
-            stringStream << "} ";
+            str += "} ";
         }
         
         c++;
         if (itemPerLine > 0 && c >= itemPerLine) {
             c = 0;
-            stringStream << std::endl;
+            str += "\n";
         }
     }
     
-    return stringStream.str();
+    return str;
 }
 
 std::string BoardCore::toSimplePgn() const
 {
-    std::ostringstream stringStream;
+    std::string str;
 
-    stringStream << "[Event \"event\"]\n";
+    str += "[Event \"event\"]\n";
     if (!startFen.empty()) {
-        stringStream << "[FEN \"" << startFen << "\"]\n";
+        str += "[FEN \"" + startFen + "\"]\n";
     }
 
-    stringStream << "\n" << toMoveListString(Notation::san, 1000, false,
+    str += "\n" + toMoveListString(Notation::san, 1000, false,
                                              CommentComputerInfoType::standard);
-    return stringStream.str();
+    return str;
 }
 
 // Except Event

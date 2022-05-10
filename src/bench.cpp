@@ -18,8 +18,8 @@ void Bench::runTask()
 {
     std::cout   << "Finding a FEN..." << std::endl;
 
-    if (paraRecord.bookPaths.empty()) {
-        std::cout << "Error: there is no path for book files" << std::endl;
+    if (paraRecord.inputPaths.empty()) {
+        std::cout << "Error: there is no path for input files" << std::endl;
         return;
     }
 
@@ -75,7 +75,7 @@ void Bench::runTask()
     }
 
     // Query databases
-    for(auto && dbPath : paraRecord.bookPaths) {
+    for(auto && dbPath : paraRecord.inputPaths) {
         startTime = getNow();
         if (bslib::Funcs::endsWith(dbPath, ".db3")) {
             queryADb(dbPath, fenVec);

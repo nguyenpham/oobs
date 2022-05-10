@@ -31,9 +31,9 @@
       </Testables>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Release"
-      selectedDebuggerIdentifier = ""
-      selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
+      buildConfiguration = "Debug"
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
@@ -72,12 +72,12 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-book /Users/nguyenpham/Downloads/book-mb3.54.obs.db3"
+            argument = "-in /Users/nguyenpham/Downloads/book-mb3.54.obs.db3"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-q &quot;rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1&quot;"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-book /Users/nguyenpham/Downloads/book-mb3.54.bin"
@@ -125,6 +125,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-gamepernode 3"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-o win=6,loss=-1,draw=2,noresult=win"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

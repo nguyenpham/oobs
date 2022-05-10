@@ -18,8 +18,8 @@ void Search::runTask()
 {
     std::cout   << "Finding a FEN..." << std::endl;
 
-    if (paraRecord.bookPaths.empty()) {
-        std::cout << "Error: there is no path for book files" << std::endl;
+    if (paraRecord.inputPaths.empty()) {
+        std::cout << "Error: there is no path for input files" << std::endl;
         return;
     }
     
@@ -42,12 +42,12 @@ void Search::runTask()
     }
 
     // Query databases
-    for(auto && dbPath : paraRecord.bookPaths) {
-        if (bslib::Funcs::endsWith(dbPath, ".db3")) {
-            queryADb(dbPath, fenVec);
+    for(auto && path : paraRecord.inputPaths) {
+        if (bslib::Funcs::endsWith(path, ".db3")) {
+            queryADb(path, fenVec);
         }
-        else if (bslib::Funcs::endsWith(dbPath, ".bin")) {
-            queryAPolyglot(dbPath, fenVec);
+        else if (bslib::Funcs::endsWith(path, ".bin")) {
+            queryAPolyglot(path, fenVec);
         }
     }
 }

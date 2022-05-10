@@ -44,28 +44,33 @@ void BookMaker::runTask()
     startTime = getNow();
 
     // Prepare
-    assert(!paraRecord.bookPaths.empty());
-    auto bookPath = paraRecord.bookPaths.front();
-    
+    assert(!paraRecord.outputPaths.empty());
+    auto bookPath = paraRecord.outputPaths.front();
     // remove old db file if existed
     std::remove(bookPath.c_str());
     
-    create();
+    createBook();
 }
 
-void BookMaker::create()
+void BookMaker::createBook()
 {
-    std::cout << "Building opening trees from PGN files/databases..." << std::endl;
     // init
     {
+        std::cout << "Building opening trees from PGN files/databases..." << std::endl;
         gameCnt = itemCnt = discardCnt = 0;
+        lastEpdSet.clear();
+        
+        // auto set flag to discard games with FENs
+        paraRecord.optionFlag |= ocgdb::create_flag_discard_fen;
     }
 
-    if (createBook()) {
-        processPgnFiles(paraRecord.pgnPaths);
-
-        for(auto && dbPath : paraRecord.dbPaths) {
-            readADb(dbPath, "SELECT * FROM Games");
+    if (createBookFile()) {
+        for(auto && path : paraRecord.inputPaths) {
+            if (bslib::Funcs::endsWith(path, ".db3")) {
+                readADb(path, "SELECT * FROM Games");
+            } else {
+                processPgnFile(path);
+            }
         }
 
         toBook();
@@ -73,17 +78,34 @@ void BookMaker::create()
     }
 
     // clean up
-    if (polyglotMode) {
-        polyglotFile.close();
+    if (bookType == CreateBookType::polyglot) {
+        textBookFile.close();
     }
 }
 
-bool BookMaker::createBook()
+bool BookMaker::createBookFile()
 {
-    auto bookPath = paraRecord.bookPaths.front();
+    auto bookPath = paraRecord.outputPaths.front();
     
+    bookType = CreateBookType::none;
+
     if (bslib::Funcs::endsWith(bookPath, ".db3")) {
-        polyglotMode = false;
+        bookType = CreateBookType::obs;
+    } else if (bslib::Funcs::endsWith(bookPath, ".bin")) {
+        bookType = CreateBookType::polyglot;
+    } else if (bslib::Funcs::endsWith(bookPath, ".pgn")) {
+        bookType = CreateBookType::pgn;
+    } else if (bslib::Funcs::endsWith(bookPath, ".epd")) {
+        bookType = CreateBookType::epd;
+    } else {
+        std::cerr << "Error: can't recognize the book extension. Stop!" << std::endl;
+        return false;
+    }
+    
+    switch(bookType) {
+    case CreateBookType::obs:
+    {
+        paraRecord.ply_delta = 0;
         bookDb = createBookDb(bookPath, paraRecord.desc);
         
         // prepared statements
@@ -106,21 +128,32 @@ bool BookMaker::createBook()
         }
         return false;
     }
-    
-    // Polyglot
-    polyglotMode = true;
-    assert(bslib::Funcs::endsWith(bookPath, ".bin")); // Polyglot
-    polyglotFile.open(bookPath, std::ofstream::binary| std::ofstream::trunc);
-    auto r = polyglotFile.is_open();
-    
-    if (r) {
-        std::cout << "Opened successfully to write Polyglot book " << bookPath << std::endl;
-    } else {
-        std::cerr << "Error: can't open to write Polyglot book " << bookPath << std::endl;
+    case CreateBookType::polyglot:
+        paraRecord.ply_delta = 0;
 
+    case CreateBookType::pgn:
+    case CreateBookType::epd:
+    {
+        std::ios_base::openmode mode = std::ofstream::trunc | std::ofstream::out;
+        if (bookType == CreateBookType::polyglot) {
+            mode |= std::ofstream::binary;
+        }
+
+        textBookFile.open(bookPath, mode);
+        if (textBookFile.is_open()) {
+            std::cout << "Opened successfully to write the text book " << bookPath << std::endl;
+            return true;
+        }
+        
+        std::cerr << "Error: can't open to write the text book " << bookPath << std::endl;
+        break;
     }
-    
-    return r;
+    default:
+            assert(false);
+        break;
+    }
+
+    return false;
 }
 
 void BookMaker::updateInfoTable()
@@ -163,7 +196,7 @@ SQLite::Database* BookMaker::createBookDb(const std::string& path, const std::st
 
         db->exec("DROP TABLE IF EXISTS Info");
         db->exec("CREATE TABLE Info (Name TEXT UNIQUE NOT NULL, Value TEXT)");
-        db->exec("INSERT INTO Info (Name, Value) VALUES ('Data Structure Version', '" + ocgdb::VersionDatabaseString + "')");
+        db->exec("INSERT INTO Info (Name, Value) VALUES ('Data Structure Version', '" + oobs::VersionDatabaseString + "')");
 
         // User Data version
         db->exec("INSERT INTO Info (Name, Value) VALUES ('Version', '" + ocgdb::VersionUserDatabaseString + "')");
@@ -259,6 +292,20 @@ void BookMaker::processPGNGameWithAThread(ocgdb::ThreadRecord* t, const std::uno
     if ((paraRecord.optionFlag & ocgdb::create_flag_discard_no_elo) && eloCnt != 2) {
         return;
     }
+    
+    if (resultString.empty()) {
+        if (paraRecord.optionFlag & ocgdb::flag_noresult_win) {
+            resultString = "1-0";
+        } else
+        if (paraRecord.optionFlag & ocgdb::flag_noresult_draw) {
+            resultString = "0.5-0.5";
+        } else
+        if (paraRecord.optionFlag & ocgdb::flag_noresult_loss) {
+            resultString = "0-1";
+        } else {
+            return;
+        }
+    }
 
     assert(t);
     t->init();
@@ -269,6 +316,7 @@ void BookMaker::processPGNGameWithAThread(ocgdb::ThreadRecord* t, const std::uno
 
     bslib::PgnRecord record;
     record.moveText = moveText;
+    record.result = resultString;
     record.gameID = static_cast<int>(gameCnt);
 
     t->board->fromMoveList(&record, bslib::Notation::san, flag);
@@ -315,32 +363,53 @@ void BookMaker::toBook()
     auto startTime2 = getNow();
 
     auto fenID = 1, transactionCnt = 0;
-    for(auto && it : nodeMap) {
-        if (it.second.hitCount() >= paraRecord.gamepernode) {
-            if (!polyglotMode) {
-                if (transactionCnt >= Transaction2Comit) {
-                    sendTransaction(bookDb, false);
-                    transactionCnt = 0;
+    
+    if (bookType == CreateBookType::pgn || bookType == CreateBookType::epd) {
+        setupRandonSavingPly();
+        auto board = bslib::Funcs::createBoard(chessVariant);
+        board->newGame("");
+        std::set<uint64_t> vistedSet;
+        toBookPgnEpd(board, vistedSet);
+        delete board;
+    } else {
+        
+        // Polyglot: calculate global scale to scale to 16-bit number
+        polyglotScaleFactor = 1.0;
+        if (bookType == CreateBookType::polyglot) {
+            auto maxScore = 0;
+            for(auto && it : nodeMap) {
+                if (it.second.hitCount() >= paraRecord.gamepernode) {
+                    for(auto && wdl : it.second.moveMap) {
+                        auto score = scoreForPolyglot(wdl.second, it.second.isWhite());
+                        maxScore = std::max(maxScore, score);
+                    }
                 }
-                if (transactionCnt == 0) {
-                    sendTransaction(bookDb, true);
-                }
-                transactionCnt++;
             }
+            
+            if (maxScore > 0xffff) {
+                polyglotScaleFactor = 0xffff / static_cast<double>(maxScore);
+            }
+        }
+        
+        for(auto && it : nodeMap) {
+            if (it.second.hitCount() >= paraRecord.gamepernode) {
+                if (bookType == CreateBookType::obs) {
+                    if (transactionCnt >= Transaction2Comit) {
+                        sendTransaction(bookDb, false);
+                        transactionCnt = 0;
+                    }
+                    if (transactionCnt == 0) {
+                        sendTransaction(bookDb, true);
+                    }
+                    transactionCnt++;
+                }
 
-            add(fenID, it.first, it.second);
+                add(fenID, it.first, it.second);
+            }
         }
     }
 
-    int64_t elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(getNow() - startTime2).count() + 1;
-
-    std::cout   << "Total tree nodes: " << nodeMap.size()
-                << ", stored moves: " << itemCnt
-                << ", elapsed: " << elapsed << " ms "
-                << bslib::Funcs::secondToClockString(static_cast<int>(elapsed / 1000), ":")
-                << std::endl;
-
-    if (!polyglotMode) {
+    if (bookType == CreateBookType::obs) {
         updateInfoTable();
 
         if (transactionCnt > 0) {
@@ -356,7 +425,17 @@ void BookMaker::toBook()
             delete insertEPDStatement;
             insertEPDStatement = nullptr;
         }
+    } else if (textBookFile.is_open()) {
+        textBookFile.close();
     }
+
+    int64_t elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(getNow() - startTime2).count() + 1;
+
+    std::cout   << "Total tree nodes: " << nodeMap.size()
+                << ", stored moves: " << itemCnt
+                << ", elapsed: " << elapsed << " ms "
+                << bslib::Funcs::secondToClockString(static_cast<int>(elapsed / 1000), ":")
+                << std::endl;
 
     auto nodes = nodeMap.size();
     nodeMap.clear();
@@ -372,6 +451,105 @@ void BookMaker::toBook()
                 << ", speed: " << itemCnt * 1000 / elapsed << " nodes/s"
                 << std::endl
                 << std::endl;
+}
+
+void BookMaker::toBookPgnEpd(bslib::BoardCore* board, std::set<uint64_t>& vistedSet)
+{
+    assert(board);
+
+    // check if the position is in the tree and the hit number is accepted
+    auto it = nodeMap.find(board->hashKey);
+    if (    it == nodeMap.end()
+            || it->second.hitCount() < paraRecord.gamepernode
+            || vistedSet.find(board->hashKey) != vistedSet.end()) {
+        return;
+    }
+
+    auto n = board->getHistListSize();
+    if (n == randomSavingPly) {
+        savePgnEpd(board);
+        return;
+    }
+
+    // to avoid repeating forever
+    vistedSet.insert(board->hashKey);
+
+    auto legalCnt = 0;
+    auto theSide = board->side;
+    std::vector<bslib::MoveFull> moveList;
+    board->_gen(moveList, theSide);
+
+    for (auto && move : moveList) {
+        if (board->_quickCheckMake(move.from, move.dest, move.promotion, bookType == CreateBookType::pgn)) {
+            legalCnt++;
+            toBookPgnEpd(board, vistedSet);
+            board->_takeBack();
+        }
+    }
+
+    if (!legalCnt && n >= std::max(1, paraRecord.ply_take - paraRecord.ply_delta)) {
+        savePgnEpd(board);
+    }
+
+    vistedSet.erase(board->hashKey);
+}
+
+// If ply_delta = 0, every games may have the same length and side to move,
+// set it a value to add a random factor to the length/side to move
+void BookMaker::setupRandonSavingPly()
+{
+    randomSavingPly = paraRecord.ply_take;
+    if (paraRecord.ply_delta > 0) {
+        auto n = arc4random() % (2 * paraRecord.ply_delta + 1);
+        randomSavingPly += paraRecord.ply_delta - n;
+    }
+}
+
+void BookMaker::savePgnEpd(bslib::BoardCore* board)
+{
+    assert(board && board->getHistListSize() > 0);
+    setupRandonSavingPly();
+
+    std::string str;
+    if (bookType == CreateBookType::pgn) {
+        auto ok = true;
+        if (paraRecord.optionFlag & ocgdb::flag_pgn_unique_lastpos) {
+            auto epd = board->getEPD(false);
+            ok = lastEpdSet.find(epd) == lastEpdSet.end();
+            if (!ok) {
+                lastEpdSet.insert(epd);
+            }
+        }
+
+        if (ok) {
+            str = "\n[Event \"?\"]\n[Site \"?\"]\n[Date \"????.??.??\"]\n[Round \"?\"]\n[White \"?\"]\n[Black \"?\"]\n[Result \"*\"]\n";
+
+            auto eco = board->getLastFullEcoString();
+            if (!eco.empty()) {
+                auto vec = bslib::Funcs::splitString(eco, ';');
+                if (vec.size() > 1) {
+                    str += "[ECO \"" + vec.front() + "\"]\n[Opening \"" + vec.back() + "\"]\n";
+                }
+            }
+
+            str += "\n"
+                   + board->toMoveListString(bslib::Notation::san, 10, true, bslib::CommentComputerInfoType::none, true)
+                   + " *\n\n";
+        }
+    } else if (bookType == CreateBookType::epd) {
+        auto epd = board->getEPD(false);
+        if (lastEpdSet.find(epd) == lastEpdSet.end()) {
+            str = epd + "\n";
+            lastEpdSet.insert(epd);
+        }
+    }
+
+
+    if (!str.empty()) {
+        assert(textBookFile.is_open());
+        textBookFile.write(str.c_str(), str.length());
+        itemCnt++;
+    }
 }
 
 void BookMaker::add(int& fenID, uint64_t key, const BookNode& node)
@@ -393,12 +571,18 @@ void BookMaker::add(int& fenID, uint64_t key, const BookNode& node)
         return;
     }
         
-    if (polyglotMode) {
-        add2Polyglot(key, moveWDLVec, node.isWhite());
-    } else {
-        add2Db(fenID, node.epd, moveWDLVec);
-    }
+    switch (bookType) {
+        case CreateBookType::obs:
+            add2Db(fenID, node.epd, moveWDLVec);
+            break;
+        case CreateBookType::polyglot:
+            add2Polyglot(key, moveWDLVec, node.isWhite());
+            break;
 
+        default:
+            std::cerr << "Error: The book is not supported yet" << std::endl;
+            return;
+    }
     fenID++;
 }
 
@@ -458,21 +642,7 @@ void BookMaker::add2Polyglot(uint64_t hashKey, std::vector<MoveWDL>& moveWDLVec,
         return av == bv ? a.win > b.win : av > bv;
     });
     
-    // calculate global scale to scale to 16-bit number
-    auto maxScore = 0;
-    for(auto && a : moveWDLVec) {
-        // write down hashkey, score, learn
-        auto score = scoreForPolyglot(a, isWhite);
-        maxScore = std::max(maxScore, score);
-    }
-    
-    double f = 1.0;
-    if (maxScore > 0xffff) {
-        f = 0xffff / static_cast<double>(maxScore);
-    }
-
-    assert(f <= 1);
-    assert(polyglotFile.is_open());
+    assert(textBookFile.is_open());
     
     std::vector<bslib::BookPolyglotItem> vec;
     for(auto && a : moveWDLVec) {
@@ -481,7 +651,7 @@ void BookMaker::add2Polyglot(uint64_t hashKey, std::vector<MoveWDL>& moveWDLVec,
         if (score <= 0) {
             continue;
         }
-        score = std::max(1, static_cast<int>(score * f));
+        score = std::max(1, static_cast<int>(score * polyglotScaleFactor));
         assert(score <= 0xffff);
         
         bslib::Move move;
@@ -492,5 +662,6 @@ void BookMaker::add2Polyglot(uint64_t hashKey, std::vector<MoveWDL>& moveWDLVec,
         item.convertLittleEndian();
         vec.push_back(item);
     }
-    polyglotFile.write((char*)vec.data(), sizeof(bslib::BookPolyglotItem) * vec.size());
+    textBookFile.write((char*)vec.data(), sizeof(bslib::BookPolyglotItem) * vec.size());
+    itemCnt += moveWDLVec.size();
 }
