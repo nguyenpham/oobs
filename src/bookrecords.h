@@ -58,20 +58,20 @@ public:
 
 class BookNode {
 public:
-    std::string epd;
+//    std::string epd;
 
     // map move int to BookNodeMove
     std::unordered_map<int, WinDrawLoss> moveMap;
 
     void clear() {
-        epd.clear();
+//        epd.clear();
         moveMap.clear();
     }
 
     bool isValid() const {
-        if (epd.empty()) {
-            return false;
-        }
+//        if (epd.empty()) {
+//            return false;
+//        }
         
         for(auto && it : moveMap) {
             if (it.first == 0 || !it.second.isValid()) {
@@ -90,7 +90,7 @@ public:
     }
 
     void addFrom(const BookNode& node) {
-        assert(epd == node.epd);
+//        assert(epd == node.epd);
         assert(node.isValid());
 
         for(auto && m : node.moveMap) {
@@ -105,9 +105,9 @@ public:
         assert(isValid());
     }
 
-    bool isWhite() const {
-        return epd.find(" w ") != std::string::npos;
-    }
+//    bool isWhite() const {
+//        return epd.find(" w ") != std::string::npos;
+//    }
 };
 
 

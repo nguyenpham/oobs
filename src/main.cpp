@@ -54,7 +54,7 @@ void runTask(ocgdb::ParaRecord& param)
 
 void printConflictedTasks(ocgdb::Task task0, ocgdb::Task task1)
 {
-    std::cerr << "Error: multi/conflicted tasks: " << ocgdb::ParaRecord::toString(task0) << " vs "  << ocgdb::ParaRecord::toString(task1) << std::endl;
+    std::cerr << "Error: multi/conflict tasks: " << ocgdb::ParaRecord::toString(task0) << " vs "  << ocgdb::ParaRecord::toString(task1) << std::endl;
 }
 
 int main(int argc, const char * argv[])

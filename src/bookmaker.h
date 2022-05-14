@@ -54,9 +54,9 @@ private:
 
     void threadAddGame(const std::unordered_map<char*, char*>& itemMap, const char* moveText);
 
-    void add(int& fenID, uint64_t key, const BookNode&);
-    void add2Db(int& fenID, const std::string& fenString, const std::vector<MoveWDL>&);
-    void add2Polyglot(uint64_t hashKey, std::vector<MoveWDL>&, bool isWhite);
+    void add(int& fenID, const std::string& epdString, const BookNode&);
+    void add2Db(int& fenID, const std::string& epdString, const std::vector<MoveWDL>&);
+    void add2Polyglot(const std::string& epdString, std::vector<MoveWDL>&);
     int scoreForPolyglot(const WinDrawLoss& a, bool isWhite) const;
     void setupRandonSavingPly();
 
@@ -65,7 +65,7 @@ private:
     SQLite::Database* bookDb = nullptr;
 
     std::mutex nodeMapMutex;
-    std::map<uint64_t, oobs::BookNode> nodeMap;
+    std::map<std::string, oobs::BookNode> nodeMap;
     std::set<std::string> lastEpdSet;
     int randomSavingPly;
 
@@ -78,6 +78,8 @@ private:
     CreateBookType bookType = CreateBookType::obs;
 
     std::ofstream textBookFile;
+    
+    bslib::BoardCore* tmpPolyglotBoard = nullptr;
 };
 
 
