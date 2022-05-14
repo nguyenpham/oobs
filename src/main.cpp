@@ -57,43 +57,8 @@ void printConflictedTasks(ocgdb::Task task0, ocgdb::Task task1)
     std::cerr << "Error: multi/conflicted tasks: " << ocgdb::ParaRecord::toString(task0) << " vs "  << ocgdb::ParaRecord::toString(task1) << std::endl;
 }
 
-void study()
-{
-    std::cout << "Generating..." << std::endl;
-    auto startTime = ocgdb::Core::getNow();
-    std::map<uint64_t, oobs::BookNode> nodeMap;
-    for(int i = 0; i < 65 * 1024 * 1024; ++i) {
-        auto hk = std::rand();
-        
-        oobs::BookNode node;
-        nodeMap[hk] = node;
-    }
-    
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(ocgdb::Core::getNow() - startTime).count() + 1;
-
-    std::cout << "#nodes: " << nodeMap.size()
-              << ", elapsed: " << elapsed << " ms "
-              << bslib::Funcs::secondToClockString(static_cast<int>(elapsed / 1000), ":")
-              << std::endl;
-
-    startTime = ocgdb::Core::getNow();
-    std::cout << "Deleting..." << std::endl;
-
-    nodeMap.clear();
-    
-    elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(ocgdb::Core::getNow() - startTime).count() + 1;
-
-    std::cout << "Deleted: #nodes: " << nodeMap.size()
-              << ", elapsed: " << elapsed << " ms "
-              << bslib::Funcs::secondToClockString(static_cast<int>(elapsed / 1000), ":")
-              << std::endl;
-}
-
 int main(int argc, const char * argv[])
 {
-//    study();
-//    return 0;
-    
     std::cout   << "Open Opening Book Standard - Book maker (C) 2022, ver "
                 << oobs::VersionString
                 << ", by Nguyen Pham\n"
@@ -115,24 +80,26 @@ int main(int argc, const char * argv[])
     for(auto i = 1; i < argc; i++) {
         auto oldTask = paraRecord.task;
         auto str = std::string(argv[i]);
-        if (str == "-bench") {
-            paraRecord.task = ocgdb::Task::bench;
-            continue;
-        }
 
         if (str == "-debug") {
             debugMode = true;
             continue;
         }
 
-        if (str == "-create" || str == "-merge" || str == "-export") {
+        if (str == "-create" || str == "-bench" || str == "-q") {
             if (str == "-create") {
                 paraRecord.task = ocgdb::Task::create;
-            } else if (str == "-merge") {
-                paraRecord.task = ocgdb::Task::merge;
-            } else if (str == "-export") {
-                paraRecord.task = ocgdb::Task::export_;
+            } else if (str == "-bench") {
+                paraRecord.task = ocgdb::Task::bench;
+            } else if (str == "-q") {
+                paraRecord.task = ocgdb::Task::query;
+                
+                if (i + 1 >= argc) {
+                    auto query = std::string(argv[++i]);
+                    paraRecord.queries.push_back(query);
+                }
             }
+
             if (oldTask != ocgdb::Task::none) {
                 errCnt++;
                 printConflictedTasks(oldTask, paraRecord.task);
@@ -159,11 +126,6 @@ int main(int argc, const char * argv[])
             paraRecord.limitElo = std::atoi(argv[++i]);
             continue;
         }
-//        if (str == "-wdl") {
-//            auto string = std::string(argv[++i]);
-//            paraRecord.setWDLFactors(string);
-//            continue;
-//        }
         if (str == "-o") {
             auto string = std::string(argv[++i]);
             paraRecord.setupOptions(string);
@@ -187,12 +149,6 @@ int main(int argc, const char * argv[])
         }
         if (str == "-desc") {
             paraRecord.desc = std::string(argv[++i]);
-            continue;
-        }
-        if (str == "-q") {
-            paraRecord.task = ocgdb::Task::query;
-            auto query = std::string(argv[++i]);
-            paraRecord.queries.push_back(query);
             continue;
         }
 

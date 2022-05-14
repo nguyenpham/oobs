@@ -418,7 +418,7 @@ void BookMaker::toBook()
 
                 add(fenID, it.first, it.second);
                 
-                if (!(cnt & 0xfffff)) {
+                if (!(cnt & 0x1fffff)) {
                     auto elapsed = getElapse(startTime2);
 
                     std::cout   << "Total processed nodes: " << cnt << "/" << nodeCnt
