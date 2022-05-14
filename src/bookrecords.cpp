@@ -16,17 +16,17 @@
 
 using namespace oobs;
 
-int MoveWDL::move2Int(int8_t from, int8_t dest, int8_t promotion, int8_t castled)
+int MoveWDL::move2Int(int from, int dest, int promotion, int castled)
 {
-    return static_cast<int>(from) | static_cast<int>(dest) << 8 | static_cast<int>(promotion) << 16 | static_cast<int>(castled) << 24;
+    return from | dest << 8 | promotion << 16 | castled << 24;
 }
 
 void MoveWDL::moveFromInt(bslib::Move& move, int& castled) const
 {
-    move.from = static_cast<int>(m & 0xff);
-    move.dest = static_cast<int>((m >> 8) & 0xff);
-    move.promotion = static_cast<int>((m >> 16) & 0xff);
-    castled = static_cast<int>((m >> 24) & 0xff);
+    move.from = m & 0xff;
+    move.dest = (m >> 8) & 0xff;
+    move.promotion = (m >> 16) & 0xff;
+    castled = (m >> 24) & 0xff;
 }
 
 std::string MoveWDL::toChessCoordinateString() const

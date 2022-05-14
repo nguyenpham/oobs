@@ -27,6 +27,10 @@ bool debugMode = false;
 using namespace ocgdb;
 
 
+std::vector<std::string> supportedExtensions{
+    ".obs.db3", ".bin", ".pgn", ".epd"
+};
+
 ////////////////////////////////////////////////////////////////////////
 bool ParaRecord::isValid() const
 {
@@ -43,10 +47,16 @@ bool ParaRecord::isValid() const
     auto outCnt = 0;
     for(auto && s : outputPaths) {
         if (!s.empty()) {
-            if (bslib::Funcs::endsWith(s, ".obs.db3") || bslib::Funcs::endsWith(s, ".bin")) {
-                outCnt++;
-            } else {
-                errorString = "Supported only Open Book Standard (.obs.db3), Polyglot (.bin). The book path must have those extensions.";
+            auto ok = false;
+            for(auto && ext : supportedExtensions) {
+                if (bslib::Funcs::endsWith(s, ext)) {
+                    ok = true;
+                    outCnt++;
+                    break;
+                }
+            }
+            if (!ok) {
+                errorString = "The file extension must be a supported one: Open Book Standard (.obs.db3), Polyglot (.bin), PGN (.pgn), EPD (.epd)";
                 return false;
             }
         }
@@ -67,7 +77,8 @@ bool ParaRecord::isValid() const
                 break;
             }
             if (outCnt != 1) {
-                errorString = "Must have one opening book path. Mising or wrong parameter -out";
+                errorString = outCnt == 0 ? "Must have an opening book path" : "Must have only one opening book path";
+                errorString += ". Mising or wrong parameter -out";
                 break;
             }
 
@@ -156,17 +167,17 @@ std::string ParaRecord::toString() const
     }
     s += "\n";
 
-    s += "\t\tPolyglot win,draw,loss factors: "
+    s += "\t\tWDL factors (for Polyglot only): "
         + std::to_string(winfactor) + ","
         + std::to_string(drawfactor) + ","
     + std::to_string(lossfactor) + "\n";
     
     s += "\n";
     s += "\tply_take: " + std::to_string(ply_take) + ", ply_delta: " + std::to_string(ply_delta)
-        + ", gamepernode: " + std::to_string(gamepernode) + "\n"
+        + ", hit: " + std::to_string(gamepernode) + "\n"
         + "\tcpu: " + std::to_string(cpuNumber)
-        + ", min Elo: " + std::to_string(limitElo)
-        + ", min game length: " + std::to_string(limitLen)
+        + ", min-Elo: " + std::to_string(limitElo)
+        + ", min-game-length: " + std::to_string(limitLen)
         + "\n";
 
     return s;
@@ -266,10 +277,18 @@ void ThreadRecord::boardToNodes(std::map<uint64_t, oobs::BookNode>& nodeMap, con
         auto node = &nodeMap[hashKey];
         if (node->epd.empty()) {
             nodeCnt++;
-            auto epdString = board2->getEPD(false);
+            auto epdString = board2->getEPD(true, false);
             node->epd = epdString;
         } else {
-            assert(node->epd == board2->getEPD(false));
+            if (node->epd != board2->getEPD(true, false)) {
+                std::cout << "node->epd     : " << node->epd
+                          << "\nboard2->getEPD: " << board2->getEPD(true, false)
+                << std::endl;
+                
+                std::cout << "board:\n" << board->toString() << std::endl;
+                std::cout << "board2:\n" << board2->toString() << std::endl;
+            }
+            assert(node->epd == board2->getEPD(true, false));
         }
         
         auto moveInt = oobs::MoveWDL::move2Int(hist.move.from, hist.move.dest, hist.move.promotion, hist.castled);

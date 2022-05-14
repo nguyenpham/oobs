@@ -57,9 +57,47 @@ void printConflictedTasks(ocgdb::Task task0, ocgdb::Task task1)
     std::cerr << "Error: multi/conflicted tasks: " << ocgdb::ParaRecord::toString(task0) << " vs "  << ocgdb::ParaRecord::toString(task1) << std::endl;
 }
 
-int main(int argc, const char * argv[]) {
+void study()
+{
+    std::cout << "Generating..." << std::endl;
+    auto startTime = ocgdb::Core::getNow();
+    std::map<uint64_t, oobs::BookNode> nodeMap;
+    for(int i = 0; i < 65 * 1024 * 1024; ++i) {
+        auto hk = std::rand();
+        
+        oobs::BookNode node;
+        nodeMap[hk] = node;
+    }
+    
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(ocgdb::Core::getNow() - startTime).count() + 1;
+
+    std::cout << "#nodes: " << nodeMap.size()
+              << ", elapsed: " << elapsed << " ms "
+              << bslib::Funcs::secondToClockString(static_cast<int>(elapsed / 1000), ":")
+              << std::endl;
+
+    startTime = ocgdb::Core::getNow();
+    std::cout << "Deleting..." << std::endl;
+
+    nodeMap.clear();
+    
+    elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(ocgdb::Core::getNow() - startTime).count() + 1;
+
+    std::cout << "Deleted: #nodes: " << nodeMap.size()
+              << ", elapsed: " << elapsed << " ms "
+              << bslib::Funcs::secondToClockString(static_cast<int>(elapsed / 1000), ":")
+              << std::endl;
+}
+
+int main(int argc, const char * argv[])
+{
+//    study();
+//    return 0;
+    
     std::cout   << "Open Opening Book Standard - Book maker (C) 2022, ver "
-                << oobs::VersionString << std::endl;
+                << oobs::VersionString
+                << ", by Nguyen Pham\n"
+                << std::endl;
     
     if (argc < 2) {
         print_usage();
@@ -143,7 +181,7 @@ int main(int argc, const char * argv[]) {
             paraRecord.ply_delta = std::atoi(argv[++i]);
             continue;
         }
-        if (str == "-gamepernode") {
+        if (str == "-hit") {
             paraRecord.gamepernode = std::atoi(argv[++i]);
             continue;
         }
@@ -194,19 +232,19 @@ void print_usage()
     " -q <EPD>              task: query info of EPDs for OOBS (.obs.db3), repeat to add multi files, works with -in\n" \
     " -bench                task: benchmark for OOBS (.obs.db3), works with -in\n" \
     " -in <path>            input path, repeat to add multi files. For task:\n" \
-    "                       -create: should be PGN (.pgn) or OCGDB (.ocgdb.db3) file\n" \
-    "                       -q: should be OOBS (.obs.db3) file" \
+    "                       -create: must be OCGDB (.ocgdb.db3) or PGN (.pgn) file\n" \
+    "                       -q: must be OOBS (.obs.db3) file\n" \
     "                       -bench: should be OOBS (.obs.db3) or Polyglot (.bin) file\n" \
-    " -out <path>           opening book file. Extensions should be:\n" \
+    " -out <path>           opening book file. Extensions must be:\n" \
     "                         OOBS: .obs.db3\n" \
     "                         Polyglot: .bin\n" \
     "                         PGN: .pgn\n" \
     "                         EPD: .epd (Extended Position Description)\n" \
-    " -elo <n>              discard games with Elo under n (for creating)\n" \
-    " -plycount <n>         discard games with ply-count under n (for creating)\n" \
-    " -plytake <n>          use first n moves to build openings\n" \
-    " -plydelta <n>         random range for plytake, use for PGN/EPD books\n" \
-    " -gamepernode <n>      count node with having at least n games\n" \
+    " -elo <n>              discard games with Elo under n (for creating), default is 0\n" \
+    " -plycount <n>         discard games with ply-count under n (for creating), default is 0\n" \
+    " -plytake <n>          use first n moves to build openings, default is 20\n" \
+    " -plydelta <n>         random range for plytake, use for PGN/EPD books, default is 1\n" \
+    " -hit <n>              ignore nodes with number of games/hit under n, default is 1\n" \
     " -cpu <n>              number of threads, should <= total physical cores, omit it for using all cores\n" \
     " -desc \"<string>\"      a description to write to the table Info when creating a new database\n" \
     " -o [<options>,]       options, separated by commas\n" \
@@ -220,11 +258,11 @@ void print_usage()
     "Examples:\n" \
     " oobs -create -in big.png -out big.obs.db3\n" \
     " oobs -create -in big.png -out big.bin -cpu 4 -o win=3,draw=1,noresult=win\n" \
-    " oobs -create -in big1.png -in big2.ocgdb.db3 -out allbig.obs.db3 -elo 2100\n" \
+    " oobs -create -in big1.png -in big2.ocgdb.db3 -out allbig.obs.db3 -elo 2100 -hit 5\n" \
     " oobs -in big.obs.db3 -q \"K7/N7/k7/8/3p4/8/N7/8 w - - 0 1\"\n" \
     "\n" \
     "Main functions/features:\n" \
-    "1. create an opening book in formats OBS (.obs.db3), Polyglot (.bin), PGN (.pgn), EPD (.epd)\n" \
+    "1. create opening books in formats OBS (.obs.db3), Polyglot (.bin), PGN (.pgn), EPD (.epd)\n" \
     "   from multi PGN/database (.ocgdb.db3) files\n" \
     "2. get/display all information for given EPD (Extended Position Description) strings from an OOBS (.obs) book\n"
     "3. benchmark\n"

@@ -81,7 +81,7 @@ public:
     int optionFlag = 0;
 
     Task task = Task::none;
-    int cpuNumber = -1, limitElo = 0, limitLen = 0, ply_take = 40, ply_delta = 2, gamepernode = 1;
+    int cpuNumber = -1, limitElo = 0, limitLen = 0, ply_take = 20, ply_delta = 1, gamepernode = 1;
     
     int winfactor = 2, drawfactor = 1, lossfactor = 0;
     

@@ -35,21 +35,21 @@ std::string BoardCore::getStartingFen() const
     return startFen;
 }
 
-std::string BoardCore::getFen() const
+std::string BoardCore::getFen(bool enpassantByRival) const
 {
     auto k = std::max<int>(fullMoveCnt, (histList.size() + 1) / 2);
-    return getFen(quietCnt / 2, k);
+    return getFen(enpassantByRival, quietCnt / 2, k);
 }
 
-std::string BoardCore::getEPD(bool withRecords) const
+std::string BoardCore::getEPD(bool enpassantByRival, bool withRecords) const
 {
     auto hist = histList.empty() ? Hist() : getLastHist();
-    return getEPD(withRecords, hist);
+    return getEPD(enpassantByRival, withRecords, hist);
 }
 
-std::string BoardCore::getEPD(bool withRecords, const Hist& hist) const
+std::string BoardCore::getEPD(bool enpassantByRival, bool withRecords, const Hist& hist) const
 {
-    auto str = getFen(-1, -1);
+    auto str = getFen(enpassantByRival, -1, -1);
 
     if (withRecords) {
         auto k = std::max<int>(fullMoveCnt, (histList.size() + 1) / 2);
@@ -508,7 +508,7 @@ void BoardCore::_parseComment_tcec(const std::string& comment, Hist& hist)
 
                 if (!pvhist.empty()) {
                     es.pv = s1;
-                    es.fen = getFen();
+                    es.fen = getFen(false);
                     es.hashKey = key();
                     es.pvhist = pvhist;
                 }
@@ -890,7 +890,7 @@ bool BoardCore::fromMoveList(const PgnRecord* record,
         }
 
         if (flag & ParseMoveListFlag_create_fen) {
-            fenString = getFen();
+            fenString = getFen(false);
         }
         if (flag & ParseMoveListFlag_create_bitboard) {
             bitboardVec = posToBitboards();
@@ -1004,7 +1004,7 @@ bool BoardCore::fromMoveList(const PgnRecord* record,
 
     for(size_t i = 0; i < moveVec.size();) {
         if (flag & ParseMoveListFlag_create_fen) {
-            fenString = getFen();
+            fenString = getFen(false);
         }
 
         if (flag & ParseMoveListFlag_create_bitboard) {

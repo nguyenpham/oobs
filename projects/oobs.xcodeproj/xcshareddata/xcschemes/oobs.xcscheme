@@ -52,19 +52,23 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-book /Users/nguyenpham/Downloads/book-carlsen.obs.db3"
-            isEnabled = "NO">
+            argument = "-in /Users/nguyenpham/Downloads/book-carlsen.obs.db3"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-db /Users/nguyenpham/Downloads/carlsen.ocgdb.db3"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-pgn /Users/nguyenpham/bsg/BanksiaMatch/db/Carlsen.pgn"
+            argument = "-in /Users/nguyenpham/bsg/BanksiaMatch/db/Carlsen.pgn"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-book /Users/nguyenpham/Downloads/book-carlsen.bin"
+            argument = "-out /Users/nguyenpham/Downloads/book-carlsen.bin"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-out /Users/nguyenpham/Downloads/book-carlsen.obs.db3"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -73,7 +77,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-in /Users/nguyenpham/Downloads/book-mb3.54.obs.db3"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-q &quot;rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1&quot;"
@@ -92,7 +96,11 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-pgn /Users/nguyenpham/bsg/BanksiaMatch/db/mb-3.45.pgn"
+            argument = "-in /Users/nguyenpham/bsg/BanksiaMatch/db/mb-3.45.pgn"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-out /Users/nguyenpham/Downloads/b354.obs.db3"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -101,10 +109,10 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-bench"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-plytake 30"
+            argument = "-plytake 40"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -113,22 +121,22 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-debug"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-elo 2000"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-plycount 40"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-gamepernode 3"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-o win=6,loss=-1,draw=2,noresult=win"
+            argument = "-o win=6,loss=-1,draw=2,noresult=draw"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

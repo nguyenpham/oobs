@@ -350,6 +350,7 @@ bool Funcs::startsWith(const std::string& str, const std::string& prefix)
 }
 
 // change halfmove clock to 0 and fullmove number to 1
+// check enpassant and count only if the opponent can capture the Pawn
 std::string Funcs::FEN2EPD(std::string fenString)
 {
     bslib::Funcs::trim(fenString);
@@ -359,6 +360,11 @@ std::string Funcs::FEN2EPD(std::string fenString)
             continue;
         }
         if (n == 3) {
+            if (i > 10 && fenString.at(i - 1) != '-') {
+                ChessBoard board;
+                board.newGame(fenString);
+                return board.getEPD(true, false);
+            }
             return fenString.substr(0, i);
         }
         n++;

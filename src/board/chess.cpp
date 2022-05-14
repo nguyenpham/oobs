@@ -170,7 +170,7 @@ std::string ChessBoard::toString() const
     
     std::ostringstream stringStream;
     
-    stringStream << getFen() << std::endl;
+    stringStream << getFen(false) << std::endl;
     
     for (int i = 0; i<64; i++) {
         auto piece = _getPiece(i);
@@ -395,7 +395,7 @@ std::string ChessBoard::getFenCastleRights() const {
     return s;
 }
 
-std::string ChessBoard::getFen(int halfCount, int fullMoveCount) const
+std::string ChessBoard::getFen(bool enpassantByRival, int halfCount, int fullMoveCount) const
 {
     std::ostringstream stringStream;
     
@@ -423,10 +423,13 @@ std::string ChessBoard::getFen(int halfCount, int fullMoveCount) const
         }
     }
     
-    stringStream << (side == Side::white ? " w " : " b ")
-                 << getFenCastleRights() << " ";
+    std::string epStr = "-";
+    if (enpassant > 0 && (!enpassantByRival || canRivalCaptureEnpassant())) {
+        epStr = posToCoordinateString(enpassant);
+    }
 
-    stringStream << (enpassant > 0 ? posToCoordinateString(enpassant) : "-");
+    stringStream << (side == Side::white ? " w " : " b ")
+                 << getFenCastleRights() << " " << epStr;
     
     if (halfCount >= 0 && fullMoveCount >= 0) {
         stringStream << " " << halfCount << " " << fullMoveCount;
@@ -2102,25 +2105,44 @@ uint64_t ChessBoard::xorHashKey(int pos) const
     return RandomPiece[offset_piece];
 }
 
+// check if opponent could capture the last advanced-2-rows Pawn
+bool ChessBoard::canRivalCaptureEnpassant() const
+{
+    if (enpassant > 0 && enpassant < 64) {
+        auto col = getColumn(enpassant), row = getRank(enpassant);
+        if (row == 2) {
+            return ((col && _isPiece(enpassant + 7, static_cast<int>(PieceTypeStd::pawn), Side::white)) ||
+             (col < 7 && _isPiece(enpassant + 9, static_cast<int>(PieceTypeStd::pawn), Side::white)));
+        } else {
+            return ((col && _isPiece(enpassant - 9, static_cast<int>(PieceTypeStd::pawn), Side::black)) ||
+                 (col < 7 && _isPiece(enpassant - 7, static_cast<int>(PieceTypeStd::pawn), Side::black)));
+        }
+    }
+    
+    return false;
+}
+
 uint64_t ChessBoard::hashKeyEnpassant(int enpassant) const
 {
     uint64_t key = 0;
-    
-    if (enpassant > 0 && enpassant < 64) {
-        
-        assert(enpassant >= 16 && enpassant < 48);
-        
-        auto col = getColumn(enpassant), row = getRank(enpassant);
-        assert(row == 2 || row == 5);
+
+    // Polyglot counts en-passant only if the opponent could capture that Pawn
+    if (enpassant > 0 && enpassant < 64 && canRivalCaptureEnpassant()) {
+        auto row = getRank(enpassant); assert(row == 2 || row == 5);
+
+        // check legal
         auto ok = false;
         if (row == 2) {
             ok = _isPiece(enpassant + 8, static_cast<int>(PieceTypeStd::pawn), Side::black);
         } else {
             ok = _isPiece(enpassant - 8, static_cast<int>(PieceTypeStd::pawn), Side::white);
         }
-        if (ok) key ^= RandomEnPassant[col];
+
+        if (ok) {
+            key ^= RandomEnPassant[getColumn(enpassant)];
+        }
     }
-    
+
     return key;
 }
 

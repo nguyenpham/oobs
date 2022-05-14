@@ -16,7 +16,7 @@ using namespace oobs;
 
 void Bench::runTask()
 {
-    std::cout   << "Finding a FEN..." << std::endl;
+    std::cout   << "Benchmark..." << std::endl;
 
     if (paraRecord.inputPaths.empty()) {
         std::cout << "Error: there is no path for input files" << std::endl;

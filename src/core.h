@@ -31,13 +31,14 @@ public:
 
     virtual void run(const ocgdb::ParaRecord&);
     ThreadRecord* getThreadRecord();
+    static std::chrono::steady_clock::time_point getNow();
+    static int64_t getElapse(std::chrono::steady_clock::time_point start);
 
 protected:
     virtual void runTask() = 0;
 
     void createPool();
     virtual void printStats() const;
-    static std::chrono::steady_clock::time_point getNow();
 
 protected:
     bslib::ChessVariant chessVariant = bslib::ChessVariant::standard;

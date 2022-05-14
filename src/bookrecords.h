@@ -40,13 +40,13 @@ public:
     }
     
     bool isValid() const {
-        return total() > 0;
+        return win >= 0 && draw >= 0 && loss >= 0 && total() > 0;
     }
 };
 
 class MoveWDL : public WinDrawLoss {
 public:
-    static int move2Int(int8_t from, int8_t dest, int8_t promotion, int8_t castled);
+    static int move2Int(int from, int dest, int promotion, int castled);
 
     void moveFromInt(bslib::Move& move, int& castled) const;
     std::string toChessCoordinateString() const;
@@ -59,9 +59,14 @@ public:
 class BookNode {
 public:
     std::string epd;
-    
+
     // map move int to BookNodeMove
     std::unordered_map<int, WinDrawLoss> moveMap;
+
+    void clear() {
+        epd.clear();
+        moveMap.clear();
+    }
 
     bool isValid() const {
         if (epd.empty()) {
@@ -75,7 +80,7 @@ public:
         }
         return true;
     }
-    
+
     int hitCount() const {
         int cnt = 0;
         for(auto && it : moveMap) {
@@ -83,7 +88,7 @@ public:
         }
         return cnt;
     }
-    
+
     void addFrom(const BookNode& node) {
         assert(epd == node.epd);
         assert(node.isValid());
@@ -99,7 +104,7 @@ public:
         
         assert(isValid());
     }
-    
+
     bool isWhite() const {
         return epd.find(" w ") != std::string::npos;
     }

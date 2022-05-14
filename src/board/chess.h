@@ -42,7 +42,7 @@ namespace bslib {
         virtual void _setFen(const std::string& fen) override;
 
         using BoardCore::getFen;
-        virtual std::string getFen(int halfCount, int fullMoveCount) const override;
+        virtual std::string getFen(bool enpassantByRival, int halfCount, int fullMoveCount) const override;
 
         virtual void _gen(std::vector<MoveFull>& moveList, Side attackerSide) const override;
         virtual bool _isIncheck(Side beingAttackedSide) const override;
@@ -139,6 +139,8 @@ namespace bslib {
         virtual std::string getLastFullEcoString() const override;
 
     protected:
+        bool canRivalCaptureEnpassant() const;
+
         bool _quickCheck_bishop(int from, int dest, bool checkMiddle) const;
         virtual bool _quickCheck_king(int from, int dest, bool checkMiddle) const;
 

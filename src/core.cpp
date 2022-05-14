@@ -46,6 +46,11 @@ std::chrono::steady_clock::time_point Core::getNow()
     return std::chrono::steady_clock::now();
 }
 
+int64_t Core::getElapse(std::chrono::steady_clock::time_point start)
+{
+    return std::chrono::duration_cast<std::chrono::milliseconds>(getNow() - start).count();
+}
+
 void Core::createPool()
 {
     auto cpu = paraRecord.cpuNumber;

@@ -31,6 +31,9 @@ const bool two_tableMode = false;
 
 using namespace oobs;
 
+static const std::string bookTypeNames[] = {
+    "OOBS", "Polyglot", "PGN", "EPD", "none", ""
+};
 
 void BookMaker::runTask()
 {
@@ -38,8 +41,11 @@ void BookMaker::runTask()
     assert(sizeof(WinDrawLoss) == 12);
     assert(sizeof(MoveWDL) == 16);
 
-    std::cout << "Convert PGN/database files into a database..." << std::endl;
-    std::cout << "Mode: " << (two_tableMode ? "two tables" : "one table") << std::endl;
+    std::cout << "Creating a new book..." << std::endl;
+
+    if (two_tableMode) {
+        std::cerr << "WARNING: using two tables, that is NOT standard. Use for studying only!" << std::endl;
+    }
 
     startTime = getNow();
 
@@ -56,7 +62,7 @@ void BookMaker::createBook()
 {
     // init
     {
-        std::cout << "Building opening trees from PGN files/databases..." << std::endl;
+        std::cout << "Building the opening tree from input files..." << std::endl;
         gameCnt = itemCnt = discardCnt = 0;
         lastEpdSet.clear();
         
@@ -101,7 +107,9 @@ bool BookMaker::createBookFile()
         std::cerr << "Error: can't recognize the book extension. Stop!" << std::endl;
         return false;
     }
-    
+
+    std::cout << "Book type: " << bookTypeNames[static_cast<int>(bookType)] << std::endl;
+
     switch(bookType) {
     case CreateBookType::obs:
     {
@@ -181,7 +189,7 @@ void BookMaker::printStats() const
         nodeCnt += m.second.nodeCnt;
     }
     DbCore::printStats();
-    std::cout << ", nodeCnt: " << nodeCnt << std::endl;
+    std::cout << ", tree nodes: " << nodeCnt << std::endl;
 }
 
 SQLite::Database* BookMaker::createBookDb(const std::string& path, const std::string& dbDescription)
@@ -359,11 +367,13 @@ void BookMaker::processAGameWithAThread(ocgdb::ThreadRecord* t, const bslib::Pgn
 void BookMaker::toBook()
 {
     std::cout << "Exporting to book..." << std::endl;
+    std::lock_guard<std::mutex> dolock(nodeMapMutex);
 
     auto startTime2 = getNow();
 
     auto fenID = 1, transactionCnt = 0;
-    
+    auto nodeCnt = nodeMap.size();
+
     if (bookType == CreateBookType::pgn || bookType == CreateBookType::epd) {
         setupRandonSavingPly();
         auto board = bslib::Funcs::createBoard(chessVariant);
@@ -391,7 +401,9 @@ void BookMaker::toBook()
             }
         }
         
+        uint64_t cnt = 0;
         for(auto && it : nodeMap) {
+            cnt++;
             if (it.second.hitCount() >= paraRecord.gamepernode) {
                 if (bookType == CreateBookType::obs) {
                     if (transactionCnt >= Transaction2Comit) {
@@ -405,7 +417,20 @@ void BookMaker::toBook()
                 }
 
                 add(fenID, it.first, it.second);
+                
+                if (!(cnt & 0xfffff)) {
+                    auto elapsed = getElapse(startTime2);
+
+                    std::cout   << "Total processed nodes: " << cnt << "/" << nodeCnt
+                                << ", stored: " << fenID
+                                << ", elapsed: " << elapsed << " ms "
+                                << bslib::Funcs::secondToClockString(static_cast<int>(elapsed / 1000), ":")
+                                << std::endl;
+                }
             }
+            
+            // save memory when database is growing
+            it.second.clear();
         }
     }
 
@@ -425,30 +450,39 @@ void BookMaker::toBook()
             delete insertEPDStatement;
             insertEPDStatement = nullptr;
         }
+
+        delete bookDb;
+        bookDb = nullptr;
+
     } else if (textBookFile.is_open()) {
         textBookFile.close();
     }
 
-    int64_t elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(getNow() - startTime2).count() + 1;
+    auto elapsed = getElapse(startTime2);
 
-    std::cout   << "Total tree nodes: " << nodeMap.size()
-                << ", stored moves: " << itemCnt
+    std::cout   << "Total tree nodes: " << nodeCnt
+                << ", book-items: " << itemCnt
                 << ", elapsed: " << elapsed << " ms "
                 << bslib::Funcs::secondToClockString(static_cast<int>(elapsed / 1000), ":")
                 << std::endl;
 
-    auto nodes = nodeMap.size();
-    nodeMap.clear();
     
-    elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(getNow() - startTime2).count() + 1;
+    std::cout   << "Data is done! Deleting the opening tree..." << std::endl;
+
+    // odd: clear took too much time and mem and may crash
+    nodeMap.clear();
+
+    std::cout   << "The tree deleted." << std::endl;
+
+    elapsed = getElapse(startTime2);
 
     std::cout
                 << "Exported, #games: " << gameCnt
-                << ", #nodes: " << nodes
-                << ", #items: " << itemCnt
+                << ", #nodes: " << nodeCnt
+                << ", book-items: " << itemCnt
                 << ", elapsed: " << elapsed << " ms "
                 << bslib::Funcs::secondToClockString(static_cast<int>(elapsed / 1000), ":")
-                << ", speed: " << itemCnt * 1000 / elapsed << " nodes/s"
+                << ", speed: " << itemCnt * 1000 / (elapsed + 1) << " nodes/s"
                 << std::endl
                 << std::endl;
 }
@@ -514,7 +548,7 @@ void BookMaker::savePgnEpd(bslib::BoardCore* board)
     if (bookType == CreateBookType::pgn) {
         auto ok = true;
         if (paraRecord.optionFlag & ocgdb::flag_pgn_unique_lastpos) {
-            auto epd = board->getEPD(false);
+            auto epd = board->getEPD(true, false);
             ok = lastEpdSet.find(epd) == lastEpdSet.end();
             if (!ok) {
                 lastEpdSet.insert(epd);
@@ -537,14 +571,13 @@ void BookMaker::savePgnEpd(bslib::BoardCore* board)
                    + " *\n\n";
         }
     } else if (bookType == CreateBookType::epd) {
-        auto epd = board->getEPD(false);
+        auto epd = board->getEPD(true, false);
         if (lastEpdSet.find(epd) == lastEpdSet.end()) {
             str = epd + "\n";
             lastEpdSet.insert(epd);
         }
     }
-
-
+    
     if (!str.empty()) {
         assert(textBookFile.is_open());
         textBookFile.write(str.c_str(), str.length());
@@ -663,5 +696,5 @@ void BookMaker::add2Polyglot(uint64_t hashKey, std::vector<MoveWDL>& moveWDLVec,
         vec.push_back(item);
     }
     textBookFile.write((char*)vec.data(), sizeof(bslib::BookPolyglotItem) * vec.size());
-    itemCnt += moveWDLVec.size();
+    itemCnt += vec.size();
 }
