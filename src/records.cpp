@@ -253,7 +253,8 @@ void ThreadRecord::resetStats()
     errCnt = gameCnt = nodeCnt = 0;
 }
 
-void ThreadRecord::boardToNodes(std::map<std::string, oobs::BookNode>& nodeMap, const ParaRecord& paraRecord, const std::string& resultString)
+
+void ThreadRecord::boardToNodes(std::map<uint64_t, oobs::BookNode>& nodeMap, const ParaRecord& paraRecord, const std::string& resultString)
 {
     auto n = board->getHistListSize();
     if (n < paraRecord.limitLen) {
@@ -269,28 +270,18 @@ void ThreadRecord::boardToNodes(std::map<std::string, oobs::BookNode>& nodeMap, 
 
     board2->newGame(board->getStartingFen());
     for(auto i = 0, e = std::min(paraRecord.ply_take + paraRecord.ply_delta + 1, n); i < e; i++) {
-//        auto hashKey = board2->hashKey;
-        
-        auto epdString = board2->getEPD(true, false);
+        auto hashKey = board2->hashKey;
         auto hist = board->getHistAt(i);
         
         assert(hist.move.isValid());
 
-        auto node = &nodeMap[epdString];
-        if (node->moveMap.empty()) {
+        auto node = &nodeMap[hashKey];
+        if (node->epd.empty()) {
             nodeCnt++;
-//            auto epdString = board2->getEPD(true, false);
-//            node->epd = epdString;
+            auto epdString = board2->getEPD(true, false);
+            node->epd = epdString;
         } else {
-//            if (node->epd != board2->getEPD(true, false)) {
-//                std::cout << "node->epd     : " << node->epd
-//                          << "\nboard2->getEPD: " << board2->getEPD(true, false)
-//                << std::endl;
-//
-//                std::cout << "board:\n" << board->toString() << std::endl;
-//                std::cout << "board2:\n" << board2->toString() << std::endl;
-//            }
-//            assert(node->epd == board2->getEPD(true, false));
+            assert(node->epd == board2->getEPD(true, false));
         }
         
         auto moveInt = oobs::MoveWDL::move2Int(hist.move.from, hist.move.dest, hist.move.promotion, hist.castled);

@@ -390,9 +390,8 @@ void BookMaker::toBook()
             auto maxScore = 0;
             for(auto && it : nodeMap) {
                 if (it.second.hitCount() >= paraRecord.minHit) {
-                    auto isWhite = it.first.find(" w ") > 0;
                     for(auto && wdl : it.second.moveMap) {
-                        auto score = scoreForPolyglot(wdl.second, isWhite);
+                        auto score = scoreForPolyglot(wdl.second, it.second.isWhite());
                         maxScore = std::max(maxScore, score);
                     }
                 }
@@ -401,8 +400,6 @@ void BookMaker::toBook()
             if (maxScore > 0xffff) {
                 polyglotScaleFactor = 0xffff / static_cast<double>(maxScore);
             }
-            
-            tmpPolyglotBoard = bslib::Funcs::createBoard(bslib::ChessVariant::standard);
         }
         
         uint64_t cnt = 0;
@@ -460,11 +457,6 @@ void BookMaker::toBook()
 
     } else if (textBookFile.is_open()) {
         textBookFile.close();
-        
-        if (tmpPolyglotBoard) {
-            delete tmpPolyglotBoard;
-            tmpPolyglotBoard = nullptr;
-        }
     }
 
     auto elapsed = getElapse(startTime2);
@@ -501,8 +493,7 @@ void BookMaker::toBookPgnEpd(bslib::BoardCore* board, std::set<uint64_t>& visted
     assert(board);
 
     // check if the position is in the tree and the hit number is accepted
-    auto epdString = board->getEPD(true, false);
-    auto it = nodeMap.find(epdString);
+    auto it = nodeMap.find(board->hashKey);
     if (    it == nodeMap.end()
             || it->second.hitCount() < paraRecord.minHit
             || vistedSet.find(board->hashKey) != vistedSet.end()) {
@@ -595,7 +586,7 @@ void BookMaker::savePgnEpd(bslib::BoardCore* board)
     }
 }
 
-void BookMaker::add(int& fenID, const std::string& epdString, const BookNode& node)
+void BookMaker::add(int& fenID, uint64_t key, const BookNode& node)
 {
     std::vector<MoveWDL> moveWDLVec;
     for(auto && it : node.moveMap) {
@@ -616,10 +607,10 @@ void BookMaker::add(int& fenID, const std::string& epdString, const BookNode& no
         
     switch (bookType) {
         case CreateBookType::obs:
-            add2Db(fenID, epdString, moveWDLVec);
+            add2Db(fenID, node.epd, moveWDLVec);
             break;
         case CreateBookType::polyglot:
-            add2Polyglot(epdString, moveWDLVec);
+            add2Polyglot(key, moveWDLVec, node.isWhite());
             break;
 
         default:
@@ -673,11 +664,10 @@ int BookMaker::scoreForPolyglot(const WinDrawLoss& a, bool isWhite) const
     return score;
 }
 
-void BookMaker::add2Polyglot(const std::string& epdString, std::vector<MoveWDL>& moveWDLVec)
+void BookMaker::add2Polyglot(uint64_t hashKey, std::vector<MoveWDL>& moveWDLVec, bool isWhite)
 {
-    assert(!epdString.empty() && !moveWDLVec.empty() && tmpPolyglotBoard);
-    bool isWhite = epdString.find(" w ") > 0;
-
+    assert(hashKey && !moveWDLVec.empty());
+    
     // sort by values
     std::sort(moveWDLVec.begin(), moveWDLVec.end(),
           [=](const WinDrawLoss& a, const WinDrawLoss& b) -> bool {
@@ -701,10 +691,8 @@ void BookMaker::add2Polyglot(const std::string& epdString, std::vector<MoveWDL>&
         bslib::Move move;
         int castled;
         a.moveFromInt(move, castled);
-        tmpPolyglotBoard->newGame(epdString);
-        
-        bslib::BookPolyglotItem item(tmpPolyglotBoard->key(), move.from, move.dest, move.promotion, castled, score);
-        assert(item.move);
+        bslib::BookPolyglotItem item(hashKey, move.from, move.dest, move.promotion, castled, score);
+        assert(item.key == hashKey && item.move);
         item.convertLittleEndian();
         vec.push_back(item);
     }

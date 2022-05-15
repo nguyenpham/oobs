@@ -22,7 +22,7 @@
 
 namespace oobs {
 
-const std::string VersionString = "beta 1";
+const std::string VersionString = "beta 2";
 const std::string VersionDatabaseString = "0.1";
 
 class WinDrawLoss {
@@ -58,14 +58,21 @@ public:
 
 class BookNode {
 public:
-    // map move-int to BookNodeMove
+    std::string epd;
+
+    // map move int to BookNodeMove
     std::unordered_map<int, WinDrawLoss> moveMap;
 
     void clear() {
+        epd.clear();
         moveMap.clear();
     }
 
     bool isValid() const {
+        if (epd.empty()) {
+            return false;
+        }
+        
         for(auto && it : moveMap) {
             if (it.first == 0 || !it.second.isValid()) {
                 return false;
@@ -83,6 +90,7 @@ public:
     }
 
     void addFrom(const BookNode& node) {
+        assert(epd == node.epd);
         assert(node.isValid());
 
         for(auto && m : node.moveMap) {
@@ -95,6 +103,10 @@ public:
         }
         
         assert(isValid());
+    }
+
+    bool isWhite() const {
+        return epd.find(" w ") != std::string::npos;
     }
 };
 

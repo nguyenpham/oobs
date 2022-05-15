@@ -106,7 +106,7 @@ public:
     void init();
 
     void resetStats();
-    void boardToNodes(std::map<std::string, oobs::BookNode>&, const ParaRecord&, const std::string&);
+    void boardToNodes(std::map<uint64_t, oobs::BookNode>&, const ParaRecord&, const std::string&);
 
 public:
     bslib::BoardCore *board = nullptr, *board2 = nullptr;

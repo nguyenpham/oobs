@@ -197,7 +197,7 @@ void print_usage()
     "                         PGN: .pgn\n" \
     "                         EPD: .epd (Extended Position Description)\n" \
     " -elo <n>              discard games with Elo under n (for creating), default is 0\n" \
-    " -plycount <n>         discard games with ply-count under n (for creating), default is 0\n" \
+    " -plycount <n>         discard games with ply-count under n (for creating), set 0 for all, default is 0\n" \
     " -plytake <n>          use first n moves to build openings, default is 20\n" \
     " -plydelta <n>         random range for plytake, use for PGN/EPD books, default is 1\n" \
     " -hit <n>              ignore nodes with number of games/hit under n, default is 1\n" \
