@@ -35,21 +35,21 @@ std::string BoardCore::getStartingFen() const
     return startFen;
 }
 
-std::string BoardCore::getFen(bool enpassantByRival) const
+std::string BoardCore::getFen(bool enpassantLegal) const
 {
     auto k = std::max<int>(fullMoveCnt, (histList.size() + 1) / 2);
-    return getFen(enpassantByRival, quietCnt / 2, k);
+    return getFen(enpassantLegal, quietCnt / 2, k);
 }
 
-std::string BoardCore::getEPD(bool enpassantByRival, bool withRecords) const
+std::string BoardCore::getEPD(bool enpassantLegal, bool withRecords) const
 {
     auto hist = histList.empty() ? Hist() : getLastHist();
-    return getEPD(enpassantByRival, withRecords, hist);
+    return getEPD(enpassantLegal, withRecords, hist);
 }
 
-std::string BoardCore::getEPD(bool enpassantByRival, bool withRecords, const Hist& hist) const
+std::string BoardCore::getEPD(bool enpassantLegal, bool withRecords, const Hist& hist) const
 {
-    auto str = getFen(enpassantByRival, -1, -1);
+    auto str = getFen(enpassantLegal, -1, -1);
 
     if (withRecords) {
         auto k = std::max<int>(fullMoveCnt, (histList.size() + 1) / 2);

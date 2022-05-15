@@ -144,7 +144,7 @@ int main(int argc, const char * argv[])
             continue;
         }
         if (str == "-hit") {
-            paraRecord.gamepernode = std::atoi(argv[++i]);
+            paraRecord.minHit = std::atoi(argv[++i]);
             continue;
         }
         if (str == "-desc") {
@@ -190,7 +190,7 @@ void print_usage()
     " -in <path>            input path, repeat to add multi files. For task:\n" \
     "                       -create: must be OCGDB (.ocgdb.db3) or PGN (.pgn) file\n" \
     "                       -q: must be OOBS (.obs.db3) file\n" \
-    "                       -bench: should be OOBS (.obs.db3) or Polyglot (.bin) file\n" \
+    "                       -bench: must be OOBS (.obs.db3) or Polyglot (.bin) file\n" \
     " -out <path>           opening book file. Extensions must be:\n" \
     "                         OOBS: .obs.db3\n" \
     "                         Polyglot: .bin\n" \

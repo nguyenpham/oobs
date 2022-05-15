@@ -68,6 +68,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-out /Users/nguyenpham/Downloads/book-carlsen.epd"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-out /Users/nguyenpham/Downloads/book-carlsen.obs.db3"
             isEnabled = "NO">
          </CommandLineArgument>
@@ -109,7 +113,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-bench"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-plytake 40"

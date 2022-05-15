@@ -334,12 +334,12 @@ namespace bslib {
         virtual void _setFen(const std::string& fen) = 0;
         virtual bool isFenValid(const std::string& fen) const = 0;
 
-        // enpassantByRival: cound enpassant only if the rival can capture the enpassant Pawn
-        virtual std::string getFen(bool enpassantByRival) const;
-        virtual std::string getFen(bool enpassantByRival, int halfCount, int fullMoveCount) const = 0;
+        // enpassantLegal: true = cound enpassant only if the rival can capture the enpassant Pawn
+        virtual std::string getFen(bool enpassantLegal) const;
+        virtual std::string getFen(bool enpassantLegal, int halfCount, int fullMoveCount) const = 0;
 
-        virtual std::string getEPD(bool enpassantByRival, bool withRecords) const;
-        virtual std::string getEPD(bool enpassantByRival, bool withRecords, const Hist&) const;
+        virtual std::string getEPD(bool enpassantLegal, bool withRecords) const;
+        virtual std::string getEPD(bool enpassantLegal, bool withRecords, const Hist&) const;
 
         virtual uint64_t initHashKey() const = 0;
         

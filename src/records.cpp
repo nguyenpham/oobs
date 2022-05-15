@@ -174,7 +174,7 @@ std::string ParaRecord::toString() const
     
     s += "\n";
     s += "\tply_take: " + std::to_string(ply_take) + ", ply_delta: " + std::to_string(ply_delta)
-        + ", hit: " + std::to_string(gamepernode) + "\n"
+        + ", hit: " + std::to_string(minHit) + "\n"
         + "\tcpu: " + std::to_string(cpuNumber)
         + ", min-Elo: " + std::to_string(limitElo)
         + ", min-game-length: " + std::to_string(limitLen)

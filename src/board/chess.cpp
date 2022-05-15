@@ -395,7 +395,7 @@ std::string ChessBoard::getFenCastleRights() const {
     return s;
 }
 
-std::string ChessBoard::getFen(bool enpassantByRival, int halfCount, int fullMoveCount) const
+std::string ChessBoard::getFen(bool enpassantLegal, int halfCount, int fullMoveCount) const
 {
     std::ostringstream stringStream;
     
@@ -424,7 +424,7 @@ std::string ChessBoard::getFen(bool enpassantByRival, int halfCount, int fullMov
     }
     
     std::string epStr = "-";
-    if (enpassant > 0 && (!enpassantByRival || canRivalCaptureEnpassant())) {
+    if (enpassant > 0 && (!enpassantLegal || canRivalCaptureEnpassant())) {
         epStr = posToCoordinateString(enpassant);
     }
 

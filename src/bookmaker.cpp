@@ -136,6 +136,7 @@ bool BookMaker::createBookFile()
         }
         return false;
     }
+
     case CreateBookType::polyglot:
         paraRecord.ply_delta = 0;
 
@@ -149,11 +150,11 @@ bool BookMaker::createBookFile()
 
         textBookFile.open(bookPath, mode);
         if (textBookFile.is_open()) {
-            std::cout << "Opened successfully to write the text book " << bookPath << std::endl;
+            std::cout << "Opened successfully to write the new book " << bookPath << std::endl;
             return true;
         }
         
-        std::cerr << "Error: can't open to write the text book " << bookPath << std::endl;
+        std::cerr << "Error: can't open to write the new book " << bookPath << std::endl;
         break;
     }
     default:
@@ -388,7 +389,7 @@ void BookMaker::toBook()
         if (bookType == CreateBookType::polyglot) {
             auto maxScore = 0;
             for(auto && it : nodeMap) {
-                if (it.second.hitCount() >= paraRecord.gamepernode) {
+                if (it.second.hitCount() >= paraRecord.minHit) {
                     auto isWhite = it.first.find(" w ") > 0;
                     for(auto && wdl : it.second.moveMap) {
                         auto score = scoreForPolyglot(wdl.second, isWhite);
@@ -407,8 +408,7 @@ void BookMaker::toBook()
         uint64_t cnt = 0;
         for(auto && it : nodeMap) {
             cnt++;
-            if (it.second.hitCount() >= paraRecord.gamepernode) {
-//                auto isWhite = it.first.find(" w ") > 0;
+            if (it.second.hitCount() >= paraRecord.minHit) {
                 if (bookType == CreateBookType::obs) {
                     if (transactionCnt >= Transaction2Comit) {
                         sendTransaction(bookDb, false);
@@ -500,41 +500,42 @@ void BookMaker::toBookPgnEpd(bslib::BoardCore* board, std::set<uint64_t>& visted
 {
     assert(board);
 
-//    // check if the position is in the tree and the hit number is accepted
-//    auto it = nodeMap.find(board->hashKey);
-//    if (    it == nodeMap.end()
-//            || it->second.hitCount() < paraRecord.gamepernode
-//            || vistedSet.find(board->hashKey) != vistedSet.end()) {
-//        return;
-//    }
-//
-//    auto n = board->getHistListSize();
-//    if (n == randomSavingPly) {
-//        savePgnEpd(board);
-//        return;
-//    }
-//
-//    // to avoid repeating forever
-//    vistedSet.insert(board->hashKey);
-//
-//    auto legalCnt = 0;
-//    auto theSide = board->side;
-//    std::vector<bslib::MoveFull> moveList;
-//    board->_gen(moveList, theSide);
-//
-//    for (auto && move : moveList) {
-//        if (board->_quickCheckMake(move.from, move.dest, move.promotion, bookType == CreateBookType::pgn)) {
-//            legalCnt++;
-//            toBookPgnEpd(board, vistedSet);
-//            board->_takeBack();
-//        }
-//    }
-//
-//    if (!legalCnt && n >= std::max(1, paraRecord.ply_take - paraRecord.ply_delta)) {
-//        savePgnEpd(board);
-//    }
-//
-//    vistedSet.erase(board->hashKey);
+    // check if the position is in the tree and the hit number is accepted
+    auto epdString = board->getEPD(true, false);
+    auto it = nodeMap.find(epdString);
+    if (    it == nodeMap.end()
+            || it->second.hitCount() < paraRecord.minHit
+            || vistedSet.find(board->hashKey) != vistedSet.end()) {
+        return;
+    }
+
+    auto n = board->getHistListSize();
+    if (n == randomSavingPly) {
+        savePgnEpd(board);
+        return;
+    }
+
+    // to avoid repeating forever
+    vistedSet.insert(board->hashKey);
+
+    auto legalCnt = 0;
+    auto theSide = board->side;
+    std::vector<bslib::MoveFull> moveList;
+    board->_gen(moveList, theSide);
+
+    for (auto && move : moveList) {
+        if (board->_quickCheckMake(move.from, move.dest, move.promotion, bookType == CreateBookType::pgn)) {
+            legalCnt++;
+            toBookPgnEpd(board, vistedSet);
+            board->_takeBack();
+        }
+    }
+
+    if (!legalCnt && n >= std::max(1, paraRecord.ply_take - paraRecord.ply_delta)) {
+        savePgnEpd(board);
+    }
+
+    vistedSet.erase(board->hashKey);
 }
 
 // If ply_delta = 0, every games may have the same length and side to move,
@@ -599,7 +600,7 @@ void BookMaker::add(int& fenID, const std::string& epdString, const BookNode& no
     std::vector<MoveWDL> moveWDLVec;
     for(auto && it : node.moveMap) {
         auto wdl = it.second;
-        if (wdl.total() >= paraRecord.gamepernode) {
+        if (wdl.total() >= paraRecord.minHit) {
             MoveWDL moveWDL;
             moveWDL.m = it.first;
             moveWDL.win = wdl.win;
