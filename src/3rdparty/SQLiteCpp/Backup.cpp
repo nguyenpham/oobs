@@ -13,7 +13,7 @@
 
 #include "Exception.h"
 
-#include "sqlite3.h"
+#include "..\sqlite3\sqlite3.h"
 
 namespace SQLite
 {

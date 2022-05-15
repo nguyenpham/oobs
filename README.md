@@ -156,8 +156,11 @@ With that index, the search speed could reach over 1600 positions per second, fa
 
 
 ## Compile
+### Make
 Run ```make``` in the folder src.
 
+### Projects
+There are some project files for Visual Studio (Windows) and XCode (macOS) in the folder projects.
 
 ## Usage
 Run program without any argument. It will display a short help how to use.

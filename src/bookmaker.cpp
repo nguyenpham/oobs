@@ -544,7 +544,7 @@ void BookMaker::setupRandonSavingPly()
 {
     randomSavingPly = paraRecord.ply_take;
     if (paraRecord.ply_delta > 0) {
-        auto n = arc4random() % (2 * paraRecord.ply_delta + 1);
+        auto n = rand() % (2 * paraRecord.ply_delta + 1);
         randomSavingPly += paraRecord.ply_delta - n;
     }
 }
