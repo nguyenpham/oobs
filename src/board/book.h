@@ -98,7 +98,6 @@ public:
 
         // for saving
     virtual bool save(const std::string&) override;
-//  bool merge(const Book*, BookMergeRule method, int fixValue);
 
     int64_t itemCnt = 0, memallocCnt = 0;
     BookPolyglotItem* items = nullptr;

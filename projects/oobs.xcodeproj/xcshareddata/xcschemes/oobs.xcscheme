@@ -69,11 +69,15 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-out /Users/nguyenpham/Downloads/book-carlsen.epd"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-out /Users/nguyenpham/Downloads/book-carlsen.obs.db3"
             isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-out /Users/nguyenpham/Downloads/book-carlsen.pgn"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-book /Users/nguyenpham/Downloads/book-354.obs.db3"
@@ -116,7 +120,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-plytake 40"
+            argument = "-plytake 20"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

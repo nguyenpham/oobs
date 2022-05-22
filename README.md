@@ -127,7 +127,7 @@ Store number of records in Book table. It is useful for quickly retracting that 
 
 ## Sample databases
 There is a sample opening book in the samples folder:
-- book-mb3.45.obs.db3. It is created by games from the MillionBase database (by Ed Schröder) of 3.45 million games. Games are limited with at least 40-ply length, Elo >= 2000, repeat at least twice, take to ply 30, hit from 3 games. The book contains about 30 million positions.
+- book-mb3m45.obs.db3.zip: it is created from the MillionBase database (by Ed Schröder) of 3.45 million games. Games are limited with at least 40-ply length, Elo >= 2000, repeated (hit) at least 4 times, take to ply 20. The book contains over 1 million positions.
 
 You may open it with any SQLite browsers/tools and make some queries to understand its structures, speed, advantages, and disadvantages.
 

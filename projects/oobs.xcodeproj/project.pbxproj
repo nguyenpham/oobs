@@ -144,6 +144,8 @@
 		B1E6938027525E1000997777 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				B1E6938127525E1000997777 /* board */,
+				B1E6938E27525E1000997777 /* 3rdparty */,
 				B1E693A827525E1000997777 /* main.cpp */,
 				B1D679332819FF8600EC6DA3 /* search.cpp */,
 				B1D679342819FF8600EC6DA3 /* search.h */,
@@ -159,9 +161,7 @@
 				B1F41E9728162A4A00A0B897 /* pgnread.h */,
 				B1F41E9A28162A4A00A0B897 /* records.cpp */,
 				B1F41E9D28162A4A00A0B897 /* records.h */,
-				B1E6938127525E1000997777 /* board */,
 				B1E6938B27525E1000997777 /* Makefile */,
-				B1E6938E27525E1000997777 /* 3rdparty */,
 				B1E693A727525E1000997777 /* bookmaker.cpp */,
 				B1E6938D27525E1000997777 /* bookmaker.h */,
 				B1F41EA52816461A00A0B897 /* bookrecords.h */,
