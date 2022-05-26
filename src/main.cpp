@@ -232,9 +232,9 @@ void print_usage()
     "    uniquelastpos      PGN books: not allow same last positions\n" \
     "\n" \
     "Examples:\n" \
-    " oobs -create -in big.png -out big.obs.db3\n" \
-    " oobs -create -in big.png -out big.bin -cpu 4 -o win=3,draw=1,noresult=win\n" \
-    " oobs -create -in big1.png -in big2.ocgdb.db3 -out allbig.obs.db3 -elo 2100 -hit 5\n" \
+    " oobs -create -in big.pgn -out big.obs.db3\n" \
+    " oobs -create -in big.pgn -out big.bin -cpu 4 -o win=3,draw=1,noresult=win\n" \
+    " oobs -create -in big1.pgn -in big2.ocgdb.db3 -out allbig.obs.db3 -elo 2100 -hit 5\n" \
     " oobs -export -in big.obs.db3 -out newbig.bin  -o win=3,draw=1,noresult=win -plytake 20 -cpu 4\n" \
     " oobs -in big.obs.db3 -fen \"K7/N7/k7/8/3p4/8/N7/8 w - - 0 1\" -o printall\n" \
     " oobs -in big.obs.db3 -q \"q[e4]\" -o printall\n" \
