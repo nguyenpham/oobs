@@ -35,13 +35,15 @@
     <ClCompile Include="..\src\board\funcs.cpp" />
     <ClCompile Include="..\src\bookmaker.cpp" />
     <ClCompile Include="..\src\bookrecords.cpp" />
-    <ClCompile Include="..\src\core.cpp" />
-    <ClCompile Include="..\src\dbcore.cpp" />
-    <ClCompile Include="..\src\dbread.cpp" />
     <ClCompile Include="..\src\main.cpp" />
-    <ClCompile Include="..\src\pgnread.cpp" />
-    <ClCompile Include="..\src\records.cpp" />
-    <ClCompile Include="..\src\report.cpp" />
+    <ClCompile Include="..\src\ocgdb\core.cpp" />
+    <ClCompile Include="..\src\ocgdb\dbcore.cpp" />
+    <ClCompile Include="..\src\ocgdb\dbread.cpp" />
+    <ClCompile Include="..\src\ocgdb\parser.cpp" />
+    <ClCompile Include="..\src\ocgdb\pgnread.cpp" />
+    <ClCompile Include="..\src\ocgdb\records.cpp" />
+    <ClCompile Include="..\src\ocgdb\report.cpp" />
+    <ClCompile Include="..\src\query.cpp" />
     <ClCompile Include="..\src\search.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -68,12 +70,14 @@
     <ClInclude Include="..\src\board\types.h" />
     <ClInclude Include="..\src\bookmaker.h" />
     <ClInclude Include="..\src\bookrecords.h" />
-    <ClInclude Include="..\src\core.h" />
-    <ClInclude Include="..\src\dbcore.h" />
-    <ClInclude Include="..\src\dbread.h" />
-    <ClInclude Include="..\src\pgnread.h" />
-    <ClInclude Include="..\src\records.h" />
-    <ClInclude Include="..\src\report.h" />
+    <ClInclude Include="..\src\ocgdb\core.h" />
+    <ClInclude Include="..\src\ocgdb\dbcore.h" />
+    <ClInclude Include="..\src\ocgdb\dbread.h" />
+    <ClInclude Include="..\src\ocgdb\parser.h" />
+    <ClInclude Include="..\src\ocgdb\pgnread.h" />
+    <ClInclude Include="..\src\ocgdb\records.h" />
+    <ClInclude Include="..\src\ocgdb\report.h" />
+    <ClInclude Include="..\src\query.h" />
     <ClInclude Include="..\src\search.h" />
   </ItemGroup>
   <ItemGroup>
