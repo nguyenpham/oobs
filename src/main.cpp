@@ -13,6 +13,7 @@
 #include "search.h"
 #include "query.h"
 #include "bench.h"
+#include "export.h"
 
 #include "board/chess.h"
 
@@ -45,6 +46,11 @@ void runTask(ocgdb::ParaRecord& param)
         case ocgdb::Task::bench:
         {
             dbCore = new oobs::Bench;
+            break;
+        }
+        case ocgdb::Task::export_:
+        {
+            dbCore = new oobs::Export;
             break;
         }
 
@@ -92,11 +98,13 @@ int main(int argc, const char * argv[])
             continue;
         }
 
-        if (str == "-create" || str == "-bench" || str == "-fen" || str == "-q") {
+        if (str == "-create" || str == "-bench" || str == "-export" || str == "-fen" || str == "-q") {
             if (str == "-create") {
                 paraRecord.task = ocgdb::Task::create;
             } else if (str == "-bench") {
                 paraRecord.task = ocgdb::Task::bench;
+            } else if (str == "-export") {
+                paraRecord.task = ocgdb::Task::export_;
             } else if (str == "-fen" || str == "-q") {
                 paraRecord.task = str == "-q" ? ocgdb::Task::query : ocgdb::Task::fen;
                 
@@ -191,11 +199,13 @@ void print_usage()
     " oobs [<parameters>]\n" \
     "\n" \
     " -create               task: create a new book from multi PGN/OCGDB files, works with -in, -out\n" \
+    " -export               task: export from OOBS (.obs.db3) to a Polyglot/PGN/EPD book, works with -in, -out\n" \
     " -fen <EPD>            task: search EPDs for OOBS (.obs.db3) or Polyglot, repeat to add multi files, works with -in\n" \
     " -q <PQL>              task: query in PQL (Position Query Language) for OOBS (.obs.db3), repeat to add multi files, works with -in\n" \
     " -bench                task: benchmark for OOBS (.obs.db3), works with -in\n" \
     " -in <path>            input path, repeat to add multi files. For task:\n" \
     "                       -create: must be OCGDB (.ocgdb.db3) or PGN (.pgn) file\n" \
+    "                       -export: must be OOBS (.obs.db3) file\n" \
     "                       -fen: must be OOBS (.obs.db3) or Polyglot (.bin) file\n" \
     "                       -q: must be OOBS (.obs.db3) file\n" \
     "                       -bench: must be OOBS (.obs.db3) or Polyglot (.bin) file\n" \
@@ -207,7 +217,7 @@ void print_usage()
     " -elo <n>              discard games with Elo under n (for creating), default is 0\n" \
     " -plycount <n>         discard games with ply-count under n (for creating), set 0 for all, default is 0\n" \
     " -plytake <n>          use first n moves to build openings, default is 20\n" \
-    " -plydelta <n>         random range for plytake, use for PGN/EPD books, default is 1\n" \
+    " -plydelta <n>         random range for plytake, use for PGN/EPD books, default is 0\n" \
     " -hit <n>              ignore nodes with number of games/hit under n, default is 1\n" \
     " -cpu <n>              number of threads, should <= total physical cores, omit it for using all cores\n" \
     " -desc \"<string>\"      a description to write to the table Info when creating a new database\n" \
@@ -225,15 +235,17 @@ void print_usage()
     " oobs -create -in big.png -out big.obs.db3\n" \
     " oobs -create -in big.png -out big.bin -cpu 4 -o win=3,draw=1,noresult=win\n" \
     " oobs -create -in big1.png -in big2.ocgdb.db3 -out allbig.obs.db3 -elo 2100 -hit 5\n" \
+    " oobs -export -in big.obs.db3 -out newbig.bin  -o win=3,draw=1,noresult=win -plytake 20 -cpu 4\n" \
     " oobs -in big.obs.db3 -fen \"K7/N7/k7/8/3p4/8/N7/8 w - - 0 1\" -o printall\n" \
     " oobs -in big.obs.db3 -q \"q[e4]\" -o printall\n" \
     "\n" \
     "Main functions/features:\n" \
     "1. create opening books in formats OBS (.obs.db3), Polyglot (.bin), PGN (.pgn), EPD (.epd)\n" \
     "   from multi PGN/database (.ocgdb.db3) files\n" \
-    "2. get/display all information for given EPD (Extended Position Description) strings from OOBS (.obs) or Polyglot (.bin) books\n"
-    "3. query in PQL from OOBS (.obs) books\n"
-    "4. benchmark\n"
+    "2. export from an OOBS book into a Polyglot/PGN/EPD book\n"
+    "3. get/display all information for given EPD (Extended Position Description) strings from OOBS (.obs) or Polyglot (.bin) books\n"
+    "4. query in PQL from OOBS (.obs) books\n"
+    "5. benchmark\n"
     ;
 
     std::cerr << str << std::endl;

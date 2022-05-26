@@ -18,7 +18,7 @@
 namespace bslib {
 
 enum class BookType {
-    polyglot, obs, none
+    polyglot, obs, pgn, epd, none
 };
 
 enum class BookStatus {
@@ -42,9 +42,10 @@ public:
         return bookStatus == BookStatus::BookStatus_ok;
     }
 
+    static std::string bookType2String(BookType);
+    
     virtual bool save() { return save(path); }
     virtual bool save(const std::string&) { return false; }
-//    virtual bool save(const BookMove*, ChessVariant) { return false; }
 
 public:
     virtual void loadData();

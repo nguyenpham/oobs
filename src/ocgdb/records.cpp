@@ -34,7 +34,7 @@ std::vector<std::string> supportedExtensions{
 ////////////////////////////////////////////////////////////////////////
 bool ParaRecord::isValid() const
 {
-    auto inCnt = 0, indb3Cnt = 0;
+    auto inCnt = 0, indb3Cnt = 0, outdb3Cnt = 0;
     for(auto && s : inputPaths) {
         if (!s.empty()) {
             inCnt++;
@@ -52,7 +52,9 @@ bool ParaRecord::isValid() const
                 if (bslib::Funcs::endsWith(s, ext)) {
                     ok = true;
                     outCnt++;
-                    break;
+                    if (ext == supportedExtensions.at(0)) {
+                        outdb3Cnt++;
+                    }
                 }
             }
             if (!ok) {
@@ -81,10 +83,22 @@ bool ParaRecord::isValid() const
                 errorString += ". Mising or wrong parameter -out";
                 break;
             }
-
+            
             ok = true;
             break;
         }
+        case Task::export_:
+            if (indb3Cnt <= 0) {
+                errorString = "Input must have at least one OOBS book path. Mising or wrong parameter -in";
+                return false;
+            }
+            if (outCnt != 1 || outCnt == outdb3Cnt) {
+                errorString = "Output must be one book path with an extension .bin (Polyglot) or .pgn or .epd. Mising or wrong parameter -out";
+                return false;
+            }
+            ok = true;
+            break;
+
 
         case Task::fen:
         case Task::query:

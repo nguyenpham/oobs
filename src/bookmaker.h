@@ -16,17 +16,13 @@
 
 #include "board/types.h"
 #include "board/base.h"
+#include "board/book.h"
 
 #include "bookrecords.h"
 #include "ocgdb/dbread.h"
 #include "ocgdb/pgnread.h"
 
 namespace oobs {
-
-enum class CreateBookType {
-    obs, polyglot, pgn, epd, none
-};
-
 
 class BookMaker : public ocgdb::DbRead, public ocgdb::PGNRead
 {
@@ -42,11 +38,11 @@ private:
 
     virtual void processAGameWithAThread(ocgdb::ThreadRecord*, const bslib::PgnRecord& record, const std::vector<int8_t>& moveVec) override;
 
-    void printStats() const override;
     void updateInfoTable();
 
-private:
+protected:
     bool createBookFile();
+    void printStats() const override;
 
     void toBook();
     void toBookPgnEpd(bslib::BoardCore* board, std::set<uint64_t>& vistedSet);
@@ -54,13 +50,14 @@ private:
 
     void threadAddGame(const std::unordered_map<char*, char*>& itemMap, const char* moveText);
 
+private:
     void add(int& fenID, uint64_t key, const BookNode&);
     void add2Db(int& fenID, const std::string& fenString, const std::vector<MoveWDL>&);
     void add2Polyglot(uint64_t hashKey, std::vector<MoveWDL>&, bool isWhite);
     int scoreForPolyglot(const WinDrawLoss& a, bool isWhite) const;
     void setupRandonSavingPly();
 
-private:
+protected:
     const int Transaction2Comit = 512 * 1024;
     SQLite::Database* bookDb = nullptr;
 
@@ -75,7 +72,7 @@ private:
     uint64_t itemCnt, discardCnt;
     double polyglotScaleFactor = 1.0;
 
-    CreateBookType bookType = CreateBookType::obs;
+    bslib::BookType bookType = bslib::BookType::obs;
 
     std::ofstream textBookFile;
 };

@@ -15,6 +15,18 @@
 using namespace bslib;
 
 
+static const std::string bookTypeNames[] = {
+    "polyglot", "obs", "pgn", "epd", "none"
+};
+
+std::string Book::bookType2String(BookType bookType)
+{
+    if (bookType > BookType::none) {
+        bookType = BookType::none;
+    }
+    return bookTypeNames[static_cast<int>(bookType)];
+}
+
 void Book::loadData()
 {
     loadData(path);
@@ -229,103 +241,10 @@ std::vector<BookPolyglotItem> BookPolyglot::search(uint64_t key) const
                 goodOrder = false;
             }
         }
-#ifndef NDEBUG
-        if (!goodOrder) {
-            std::cout << "Warning: BookPolyglot::search weight order not good - re-sorted" << std::endl;
-        }
-
-//        weight = 0xffff;
-//        for(auto && v : vec) {
-//            assert(weight >= v.weight);
-//            weight = v.weight;
-//        }
-#endif
     }
 
     return vec;
 }
-
-
-//bool BookPolyglot::merge(const Book* otherBook, BookMergeRule method, int fixValue)
-//{
-//    if (!otherBook || otherBook->type != BookType::polyglot) {
-//        return false;
-//    }
-//
-//    if (otherBook->isEmpty()) {
-//        return true;
-//    }
-//
-//    auto book = static_cast<const  BookPolyglot*>(otherBook);
-//
-//    auto sz = size() + book->size();
-//    auto tmpItems = (BookPolyglotItem*) malloc(sz * sizeof(BookPolyglotItem));
-//    auto q = tmpItems;
-//
-//    if (memallocCnt - itemCnt < book->size()) {
-//        auto need = std::min<int>(book->size(), 1024);
-//        extendDataBuffer(need);
-//    }
-//
-//    auto p0 = items, end0 = p0 + itemCnt, p1 = book->items, end1 = p1 + book->itemCnt;
-//
-//    while(p0 < end0 && p1 < end1) {
-//        if (p0->key != p1->key) {
-//            if (p0->key < p1->key) {
-//                for(auto key = p0->key; p0 < end0 && key == p0->key; ++p0) {
-//                    *q = *p0; ++q;
-//                }
-//            } else {
-//                for(auto key = p1->key; p1 < end1 && key == p1->key; ++p1) {
-//                    *q = *p1; ++q;
-//                }
-//            }
-//            continue;
-//        }
-//
-//        std::map<u16, BookPolyglotItem> theMap;
-//        auto key = p0->key;
-//        for(; p0 < end0 && key == p0->key; ++p0) {
-//            theMap[p0->move] = *p0;
-//        }
-//        for(; p1 < end1 && key == p1->key; ++p1) {
-//            if (method == BookMergeRule::priority_book2 || theMap.find(p1->move) == theMap.end()) {
-//                if (method == BookMergeRule::priority_book1)
-//                    continue;
-//                theMap[p1->move] = *p1;
-//            } else {
-//                //assert(method == BookMergeRule::add);
-//                auto item = theMap[p1->move];
-//                if (method == BookMergeRule::resetToFixValue) {
-//                    item.weight += fixValue;
-//                    item.learn = 0;
-//                } else
-//                if (method == BookMergeRule::sumup) {
-//                    item.weight += p1->weight;
-//                    item.learn += p1->learn;
-//                } else if (method == BookMergeRule::best && item.weight < p1->weight) {
-//                    item.weight = p1->weight;
-//                    item.learn = p1->learn;
-//                }
-//                theMap[p1->move] = item;
-//            }
-//        }
-//
-//        for(auto && m : theMap) {
-//            *q = m.second; ++q;
-//        }
-//    }
-//
-//
-//    // Re-store
-//    memallocCnt = sz;
-//    itemCnt = q - tmpItems;
-//    free(items);
-//    items = tmpItems;
-//
-//    //assert(isValid());
-//    return true;
-//}
 
 
 bool BookPolyglot::save(const std::string& path)
