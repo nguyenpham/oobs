@@ -11,7 +11,7 @@
 #ifndef OCGDB_DBCORE_H
 #define OCGDB_DBCORE_H
 
-#include "3rdparty/SQLiteCpp/SQLiteCpp.h"
+#include "../3rdparty/SQLiteCpp/SQLiteCpp.h"
 
 #include "core.h"
 

@@ -18,8 +18,8 @@
 #include "board/base.h"
 
 #include "bookrecords.h"
-#include "dbread.h"
-#include "pgnread.h"
+#include "ocgdb/dbread.h"
+#include "ocgdb/pgnread.h"
 
 namespace oobs {
 

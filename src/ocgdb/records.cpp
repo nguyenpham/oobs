@@ -15,8 +15,8 @@
 #include <set>
 #include <fstream>
 
-#include "board/chess.h"
-#include "board/funcs.h"
+#include "../board/chess.h"
+#include "../board/funcs.h"
 #include "dbread.h"
 
 #include "records.h"
@@ -86,12 +86,21 @@ bool ParaRecord::isValid() const
             break;
         }
 
+        case Task::fen:
         case Task::query:
-        case Task::bench:
-            if (!inCnt) {
-                errorString = "Must have at least one book (.obs.db3/.bin)  path. Mising or wrong parameter -in";
+            if (queries.empty()) {
+                errorString = "Must have at least one query/fen path. Mising or wrong parameter -q/-fen";
                 return false;
             }
+        case Task::bench:
+            if (!inCnt) {
+                errorString = "Must have at least one book (.obs.db3/.bin) path. Mising or wrong parameter -in";
+                return false;
+            }
+            if (outCnt > 0) {
+                errorString = "Redundant parameter -out";
+            }
+
             ok = true;
             break;
             
@@ -129,6 +138,7 @@ std::string ParaRecord::toString(Task task)
         "create book",
         "export",
         "merge",
+        "fen",
         "query",
         "bench",
         "none"
@@ -153,7 +163,7 @@ std::string ParaRecord::toString() const
         s += "\t\t" + path + "\n";
     }
     
-    s += "\tQueries:\n";
+    s += "\tQueries/fens:\n";
     for(auto && query : queries) {
         s += "\t\t" + query + "\n";
     }
@@ -250,7 +260,7 @@ ThreadRecord::~ThreadRecord()
 
 void ThreadRecord::resetStats()
 {
-    errCnt = gameCnt = nodeCnt = 0;
+    errCnt = gameCnt = nodeCnt = resultCnt = 0;
 }
 
 

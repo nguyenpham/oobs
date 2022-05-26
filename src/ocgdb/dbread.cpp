@@ -8,8 +8,8 @@
  * or copy at http://opensource.org/licenses/MIT)
  */
 
-#include "3rdparty/SQLiteCpp/VariadicBind.h"
-#include "3rdparty/sqlite3/sqlite3.h"
+#include "../3rdparty/SQLiteCpp/VariadicBind.h"
+#include "../3rdparty/sqlite3/sqlite3.h"
 
 #include "dbread.h"
 
@@ -40,8 +40,6 @@ const char* DbRead::tagNames[] = {
 
     nullptr, nullptr
 };
-
-
 
 
 DbRead::DbRead()

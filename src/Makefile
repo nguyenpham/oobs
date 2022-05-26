@@ -7,11 +7,9 @@
 # or copy at http://opensource.org/licenses/MIT)
 
 all:
-	g++ -std=c++17 -DNDEBUG -O3 -c *.cpp
-	g++ -std=c++17 -DNDEBUG -O3 -c board/*.cpp
-	g++ -std=c++17 -DNDEBUG -O3 -c 3rdparty/SQLiteCpp/*.cpp
+	g++ -std=c++17 -DNDEBUG -O3 -c *.cpp board/*.cpp ocgdb/*.cpp 3rdparty/SQLiteCpp/*.cpp
 	gcc -DNDEBUG -O3 -c 3rdparty/sqlite3/*.c
 	g++ -o oobs *.o -lpthread -ldl
 
 clean:
-	rm -f oobs *.o ./board/*.o ./3rdparty/SQLiteCpp/*.o ./3rdparty/sqlite3/*.o
+	rm -f oobs *.o ./board/*.o ./ocgdb/*.o ./3rdparty/SQLiteCpp/*.o ./3rdparty/sqlite3/*.o

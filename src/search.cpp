@@ -16,7 +16,7 @@ using namespace oobs;
 
 void Search::runTask()
 {
-    std::cout   << "Finding a FEN..." << std::endl;
+    std::cout   << "Querying..." << std::endl;
 
     if (paraRecord.inputPaths.empty()) {
         std::cout << "Error: there is no path for input files" << std::endl;
@@ -28,7 +28,7 @@ void Search::runTask()
         return;
     }
     
-    assert(paraRecord.task == ocgdb::Task::query);
+    assert(paraRecord.task == ocgdb::Task::fen);
     paraRecord.optionFlag |= ocgdb::query_flag_print_all;
 
     gameCnt = 0; errCnt = 0; succCount = 0;
@@ -61,23 +61,26 @@ void Search::queryADb(const std::string& dbPath, const std::vector<std::string>&
         return;
     }
 
+    auto resultCnt = 0;
     for(auto && epdString : epdVec) {
         auto sqlString = "SELECT * FROM Book WHERE EPD='" + epdString + "'";
         
         SQLite::Statement stmt(*mDb, sqlString);
         
         for (gameCnt = 0; stmt.executeStep(); ++gameCnt) {
-            std::string str;
-            for(int i = 0, cnt = stmt.getColumnCount(); i < cnt; ++i) {
-                auto c = stmt.getColumn(i);
-                std::string name = c.getName();
-                str += name + ": " + c.getString() + ", ";
-            }
+            resultCnt++;
             if (paraRecord.optionFlag & ocgdb::query_flag_print_all) {
-                std::cout << str << std::endl;
+                std::string str;
+                for(int i = 0, cnt = stmt.getColumnCount(); i < cnt; ++i) {
+                    auto c = stmt.getColumn(i);
+                    std::string name = c.getName();
+                    str += name + ": " + c.getString() + ", ";
+                }
+                ocgdb::printOut.printOut(str);
             }
         }
     }
+    std::cout << "#Results: " << resultCnt << std::endl;
 }
 
 void Search::queryAPolyglot(const std::string& dbPath, const std::vector<std::string>& epdVec)
@@ -92,6 +95,7 @@ void Search::queryAPolyglot(const std::string& dbPath, const std::vector<std::st
     }
 
     auto board = bslib::Funcs::createBoard(bslib::ChessVariant::standard);
+    auto resultCnt = 0;
     
     for(auto && epdString : epdVec) {
         std::string str = "EPD: " + epdString + "\n";
@@ -99,18 +103,20 @@ void Search::queryAPolyglot(const std::string& dbPath, const std::vector<std::st
         board->newGame(epdString);
         
         auto vec = book.search(board->key());
+        resultCnt += vec.size();
         if (vec.empty()) continue;
         
         for(auto && item : vec) {
-            auto move = item.getMove(board);
-            str += "key: " + std::to_string(item.key)
-                + ", move: " + bslib::Move::toChessCoordinateString(move.from, move.dest, move.promotion)
-                + ", weight: " + std::to_string(item.weight)
-                + ", learn: " + std::to_string(item.learn);
-            
             if (paraRecord.optionFlag & ocgdb::query_flag_print_all) {
-                std::cout << str << std::endl;
+                auto move = item.getMove(board);
+                str += "key: " + std::to_string(item.key)
+                    + ", move: " + bslib::Move::toChessCoordinateString(move.from, move.dest, move.promotion)
+                    + ", weight: " + std::to_string(item.weight)
+                    + ", learn: " + std::to_string(item.learn);
+                
+                ocgdb::printOut.printOut(str);
             }
         }
-   }
+    }
+    std::cout << "#Results: " << resultCnt << std::endl;
 }

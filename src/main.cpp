@@ -11,12 +11,13 @@
 #include <iostream>
 #include "bookmaker.h"
 #include "search.h"
+#include "query.h"
 #include "bench.h"
 
 #include "board/chess.h"
 
-#include "records.h"
-#include "report.h"
+#include "ocgdb/records.h"
+#include "ocgdb/report.h"
 
 void print_usage();
 extern bool debugMode;
@@ -31,9 +32,14 @@ void runTask(ocgdb::ParaRecord& param)
             dbCore = new oobs::BookMaker;
             break;
         }
-        case ocgdb::Task::query:
+        case ocgdb::Task::fen:
         {
             dbCore = new oobs::Search;
+            break;
+        }
+        case ocgdb::Task::query:
+        {
+            dbCore = new oobs::Query;
             break;
         }
         case ocgdb::Task::bench:
@@ -86,15 +92,15 @@ int main(int argc, const char * argv[])
             continue;
         }
 
-        if (str == "-create" || str == "-bench" || str == "-q") {
+        if (str == "-create" || str == "-bench" || str == "-fen" || str == "-q") {
             if (str == "-create") {
                 paraRecord.task = ocgdb::Task::create;
             } else if (str == "-bench") {
                 paraRecord.task = ocgdb::Task::bench;
-            } else if (str == "-q") {
-                paraRecord.task = ocgdb::Task::query;
+            } else if (str == "-fen" || str == "-q") {
+                paraRecord.task = str == "-q" ? ocgdb::Task::query : ocgdb::Task::fen;
                 
-                if (i + 1 >= argc) {
+                if (i + 1 <= argc) {
                     auto query = std::string(argv[++i]);
                     paraRecord.queries.push_back(query);
                 }
@@ -185,10 +191,12 @@ void print_usage()
     " oobs [<parameters>]\n" \
     "\n" \
     " -create               task: create a new book from multi PGN/OCGDB files, works with -in, -out\n" \
-    " -q <EPD>              task: query info of EPDs for OOBS (.obs.db3), repeat to add multi files, works with -in\n" \
+    " -fen <EPD>            task: search EPDs for OOBS (.obs.db3) or Polyglot, repeat to add multi files, works with -in\n" \
+    " -q <PQL>              task: query in PQL (Position Query Language) for OOBS (.obs.db3), repeat to add multi files, works with -in\n" \
     " -bench                task: benchmark for OOBS (.obs.db3), works with -in\n" \
     " -in <path>            input path, repeat to add multi files. For task:\n" \
     "                       -create: must be OCGDB (.ocgdb.db3) or PGN (.pgn) file\n" \
+    "                       -fen: must be OOBS (.obs.db3) or Polyglot (.bin) file\n" \
     "                       -q: must be OOBS (.obs.db3) file\n" \
     "                       -bench: must be OOBS (.obs.db3) or Polyglot (.bin) file\n" \
     " -out <path>           opening book file. Extensions must be:\n" \
@@ -204,24 +212,28 @@ void print_usage()
     " -cpu <n>              number of threads, should <= total physical cores, omit it for using all cores\n" \
     " -desc \"<string>\"      a description to write to the table Info when creating a new database\n" \
     " -o [<options>,]       options, separated by commas\n" \
+    "    printall           print all results (for querying, checking duplications)\n" \
     "    discardnoelo       discard games without player Elos (for creating)\n" \
     "    win=<n>            set win factor for Polyglot, default is 2\n" \
     "    draw=<n>           set draw factor for Polyglot, default is 1\n" \
     "    loss=<n>           set loss factor for Polyglot, default is 0\n" \
-    "    noresult=(discard|win|draw|loss)  how to treat games without results, default is discard\n" \
+    "    noresult=(discard|win|draw|loss)\n" \
+    "                       how to treat games without results, default is to discard\n" \
     "    uniquelastpos      PGN books: not allow same last positions\n" \
     "\n" \
     "Examples:\n" \
     " oobs -create -in big.png -out big.obs.db3\n" \
     " oobs -create -in big.png -out big.bin -cpu 4 -o win=3,draw=1,noresult=win\n" \
     " oobs -create -in big1.png -in big2.ocgdb.db3 -out allbig.obs.db3 -elo 2100 -hit 5\n" \
-    " oobs -in big.obs.db3 -q \"K7/N7/k7/8/3p4/8/N7/8 w - - 0 1\"\n" \
+    " oobs -in big.obs.db3 -fen \"K7/N7/k7/8/3p4/8/N7/8 w - - 0 1\" -o printall\n" \
+    " oobs -in big.obs.db3 -q \"q[e4]\" -o printall\n" \
     "\n" \
     "Main functions/features:\n" \
     "1. create opening books in formats OBS (.obs.db3), Polyglot (.bin), PGN (.pgn), EPD (.epd)\n" \
     "   from multi PGN/database (.ocgdb.db3) files\n" \
-    "2. get/display all information for given EPD (Extended Position Description) strings from an OOBS (.obs) book\n"
-    "3. benchmark\n"
+    "2. get/display all information for given EPD (Extended Position Description) strings from OOBS (.obs) or Polyglot (.bin) books\n"
+    "3. query in PQL from OOBS (.obs) books\n"
+    "4. benchmark\n"
     ;
 
     std::cerr << str << std::endl;

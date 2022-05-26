@@ -7,7 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B1D679322818454000EC6DA3 /* core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D679312818454000EC6DA3 /* core.cpp */; };
+		B1011023283DF9E100E1E403 /* report.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1011019283DF9E100E1E403 /* report.cpp */; };
+		B1011024283DF9E100E1E403 /* core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B101101A283DF9E100E1E403 /* core.cpp */; };
+		B1011025283DF9E100E1E403 /* pgnread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B101101D283DF9E100E1E403 /* pgnread.cpp */; };
+		B1011026283DF9E100E1E403 /* dbread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B101101E283DF9E100E1E403 /* dbread.cpp */; };
+		B1011027283DF9E100E1E403 /* dbcore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1011020283DF9E100E1E403 /* dbcore.cpp */; };
+		B1011028283DF9E100E1E403 /* records.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1011021283DF9E100E1E403 /* records.cpp */; };
+		B101102B283E1F5D00E1E403 /* parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B101102A283E1F5D00E1E403 /* parser.cpp */; };
+		B101102E283E233100E1E403 /* query.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B101102C283E233100E1E403 /* query.cpp */; };
 		B1D679352819FF8600EC6DA3 /* search.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D679332819FF8600EC6DA3 /* search.cpp */; };
 		B1D6793B281C188400EC6DA3 /* book.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D67939281C188400EC6DA3 /* book.cpp */; };
 		B1D679412822C1FA00EC6DA3 /* bench.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1D6793F2822C1FA00EC6DA3 /* bench.cpp */; };
@@ -26,11 +33,6 @@
 		B1E693B527525E1000997777 /* Transaction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1E693A427525E1000997777 /* Transaction.cpp */; };
 		B1E693B627525E1000997777 /* bookmaker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1E693A727525E1000997777 /* bookmaker.cpp */; };
 		B1E693B727525E1000997777 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1E693A827525E1000997777 /* main.cpp */; };
-		B1F41E9E28162A4A00A0B897 /* dbread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1F41E9628162A4900A0B897 /* dbread.cpp */; };
-		B1F41E9F28162A4A00A0B897 /* dbcore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1F41E9828162A4A00A0B897 /* dbcore.cpp */; };
-		B1F41EA028162A4A00A0B897 /* records.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1F41E9A28162A4A00A0B897 /* records.cpp */; };
-		B1F41EA128162A4A00A0B897 /* pgnread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1F41E9B28162A4A00A0B897 /* pgnread.cpp */; };
-		B1F41EA428162ABC00A0B897 /* report.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1F41EA228162ABC00A0B897 /* report.cpp */; };
 		B1F41EA728175E0500A0B897 /* bookrecords.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B1F41EA628175E0500A0B897 /* bookrecords.cpp */; };
 /* End PBXBuildFile section */
 
@@ -47,8 +49,22 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		B1D679302818454000EC6DA3 /* core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = core.h; sourceTree = "<group>"; };
-		B1D679312818454000EC6DA3 /* core.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = core.cpp; sourceTree = "<group>"; };
+		B1011017283DF9E100E1E403 /* core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = core.h; sourceTree = "<group>"; };
+		B1011018283DF9E100E1E403 /* dbread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dbread.h; sourceTree = "<group>"; };
+		B1011019283DF9E100E1E403 /* report.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = report.cpp; sourceTree = "<group>"; };
+		B101101A283DF9E100E1E403 /* core.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = core.cpp; sourceTree = "<group>"; };
+		B101101B283DF9E100E1E403 /* pgnread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pgnread.h; sourceTree = "<group>"; };
+		B101101C283DF9E100E1E403 /* report.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = report.h; sourceTree = "<group>"; };
+		B101101D283DF9E100E1E403 /* pgnread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pgnread.cpp; sourceTree = "<group>"; };
+		B101101E283DF9E100E1E403 /* dbread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dbread.cpp; sourceTree = "<group>"; };
+		B101101F283DF9E100E1E403 /* dbcore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dbcore.h; sourceTree = "<group>"; };
+		B1011020283DF9E100E1E403 /* dbcore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dbcore.cpp; sourceTree = "<group>"; };
+		B1011021283DF9E100E1E403 /* records.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = records.cpp; sourceTree = "<group>"; };
+		B1011022283DF9E100E1E403 /* records.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = records.h; sourceTree = "<group>"; };
+		B1011029283E1F5D00E1E403 /* parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = parser.h; sourceTree = "<group>"; };
+		B101102A283E1F5D00E1E403 /* parser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = parser.cpp; sourceTree = "<group>"; };
+		B101102C283E233100E1E403 /* query.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = query.cpp; sourceTree = "<group>"; };
+		B101102D283E233100E1E403 /* query.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = query.h; sourceTree = "<group>"; };
 		B1D679332819FF8600EC6DA3 /* search.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = search.cpp; sourceTree = "<group>"; };
 		B1D679342819FF8600EC6DA3 /* search.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = search.h; sourceTree = "<group>"; };
 		B1D67939281C188400EC6DA3 /* book.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = book.cpp; sourceTree = "<group>"; };
@@ -97,16 +113,6 @@
 		B1E693B92753563400997777 /* thread_pool.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = thread_pool.hpp; sourceTree = "<group>"; };
 		B1E693BA2753563400997777 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		B1E693BB2753563400997777 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
-		B1F41E9628162A4900A0B897 /* dbread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dbread.cpp; sourceTree = "<group>"; };
-		B1F41E9728162A4A00A0B897 /* pgnread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pgnread.h; sourceTree = "<group>"; };
-		B1F41E9828162A4A00A0B897 /* dbcore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dbcore.cpp; sourceTree = "<group>"; };
-		B1F41E9928162A4A00A0B897 /* dbcore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dbcore.h; sourceTree = "<group>"; };
-		B1F41E9A28162A4A00A0B897 /* records.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = records.cpp; sourceTree = "<group>"; };
-		B1F41E9B28162A4A00A0B897 /* pgnread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pgnread.cpp; sourceTree = "<group>"; };
-		B1F41E9C28162A4A00A0B897 /* dbread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dbread.h; sourceTree = "<group>"; };
-		B1F41E9D28162A4A00A0B897 /* records.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = records.h; sourceTree = "<group>"; };
-		B1F41EA228162ABC00A0B897 /* report.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = report.cpp; sourceTree = "<group>"; };
-		B1F41EA328162ABC00A0B897 /* report.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = report.h; sourceTree = "<group>"; };
 		B1F41EA52816461A00A0B897 /* bookrecords.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bookrecords.h; sourceTree = "<group>"; };
 		B1F41EA628175E0500A0B897 /* bookrecords.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = bookrecords.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -122,6 +128,27 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B1011016283DF9E100E1E403 /* ocgdb */ = {
+			isa = PBXGroup;
+			children = (
+				B101102A283E1F5D00E1E403 /* parser.cpp */,
+				B1011029283E1F5D00E1E403 /* parser.h */,
+				B1011017283DF9E100E1E403 /* core.h */,
+				B101101A283DF9E100E1E403 /* core.cpp */,
+				B1011018283DF9E100E1E403 /* dbread.h */,
+				B101101B283DF9E100E1E403 /* pgnread.h */,
+				B101101C283DF9E100E1E403 /* report.h */,
+				B1011019283DF9E100E1E403 /* report.cpp */,
+				B101101D283DF9E100E1E403 /* pgnread.cpp */,
+				B101101E283DF9E100E1E403 /* dbread.cpp */,
+				B101101F283DF9E100E1E403 /* dbcore.h */,
+				B1011020283DF9E100E1E403 /* dbcore.cpp */,
+				B1011021283DF9E100E1E403 /* records.cpp */,
+				B1011022283DF9E100E1E403 /* records.h */,
+			);
+			path = ocgdb;
+			sourceTree = "<group>";
+		};
 		B1E6936A2752571200997777 = {
 			isa = PBXGroup;
 			children = (
@@ -144,23 +171,12 @@
 		B1E6938027525E1000997777 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				B1011016283DF9E100E1E403 /* ocgdb */,
 				B1E6938127525E1000997777 /* board */,
 				B1E6938E27525E1000997777 /* 3rdparty */,
 				B1E693A827525E1000997777 /* main.cpp */,
 				B1D679332819FF8600EC6DA3 /* search.cpp */,
 				B1D679342819FF8600EC6DA3 /* search.h */,
-				B1D679312818454000EC6DA3 /* core.cpp */,
-				B1D679302818454000EC6DA3 /* core.h */,
-				B1F41EA228162ABC00A0B897 /* report.cpp */,
-				B1F41EA328162ABC00A0B897 /* report.h */,
-				B1F41E9828162A4A00A0B897 /* dbcore.cpp */,
-				B1F41E9928162A4A00A0B897 /* dbcore.h */,
-				B1F41E9628162A4900A0B897 /* dbread.cpp */,
-				B1F41E9C28162A4A00A0B897 /* dbread.h */,
-				B1F41E9B28162A4A00A0B897 /* pgnread.cpp */,
-				B1F41E9728162A4A00A0B897 /* pgnread.h */,
-				B1F41E9A28162A4A00A0B897 /* records.cpp */,
-				B1F41E9D28162A4A00A0B897 /* records.h */,
 				B1E6938B27525E1000997777 /* Makefile */,
 				B1E693A727525E1000997777 /* bookmaker.cpp */,
 				B1E6938D27525E1000997777 /* bookmaker.h */,
@@ -168,6 +184,8 @@
 				B1F41EA628175E0500A0B897 /* bookrecords.cpp */,
 				B1D6793F2822C1FA00EC6DA3 /* bench.cpp */,
 				B1D679402822C1FA00EC6DA3 /* bench.h */,
+				B101102C283E233100E1E403 /* query.cpp */,
+				B101102D283E233100E1E403 /* query.h */,
 			);
 			name = src;
 			path = ../src;
@@ -305,30 +323,32 @@
 			buildActionMask = 2147483647;
 			files = (
 				B1D679352819FF8600EC6DA3 /* search.cpp in Sources */,
-				B1F41EA028162A4A00A0B897 /* records.cpp in Sources */,
 				B1E693AD27525E1000997777 /* Makefile in Sources */,
 				B1E693B427525E1000997777 /* Backup.cpp in Sources */,
 				B1E693AE27525E1000997777 /* sqlite3.c in Sources */,
 				B1E693AA27525E1000997777 /* chess.cpp in Sources */,
 				B1E693A927525E1000997777 /* base.cpp in Sources */,
-				B1F41EA128162A4A00A0B897 /* pgnread.cpp in Sources */,
 				B1E693B127525E1000997777 /* Exception.cpp in Sources */,
 				B1E693B527525E1000997777 /* Transaction.cpp in Sources */,
-				B1F41E9F28162A4A00A0B897 /* dbcore.cpp in Sources */,
 				B1E693AC27525E1000997777 /* chesstypes.cpp in Sources */,
 				B1E693B727525E1000997777 /* main.cpp in Sources */,
 				B1E693AB27525E1000997777 /* funcs.cpp in Sources */,
+				B1011026283DF9E100E1E403 /* dbread.cpp in Sources */,
+				B101102B283E1F5D00E1E403 /* parser.cpp in Sources */,
 				B1D679412822C1FA00EC6DA3 /* bench.cpp in Sources */,
+				B101102E283E233100E1E403 /* query.cpp in Sources */,
 				B1E693B227525E1000997777 /* Statement.cpp in Sources */,
+				B1011025283DF9E100E1E403 /* pgnread.cpp in Sources */,
 				B1E693AF27525E1000997777 /* Column.cpp in Sources */,
 				B1E693B027525E1000997777 /* Savepoint.cpp in Sources */,
-				B1F41E9E28162A4A00A0B897 /* dbread.cpp in Sources */,
 				B1E693B327525E1000997777 /* Database.cpp in Sources */,
+				B1011028283DF9E100E1E403 /* records.cpp in Sources */,
+				B1011027283DF9E100E1E403 /* dbcore.cpp in Sources */,
 				B1E693B627525E1000997777 /* bookmaker.cpp in Sources */,
 				B1D6793B281C188400EC6DA3 /* book.cpp in Sources */,
 				B1F41EA728175E0500A0B897 /* bookrecords.cpp in Sources */,
-				B1D679322818454000EC6DA3 /* core.cpp in Sources */,
-				B1F41EA428162ABC00A0B897 /* report.cpp in Sources */,
+				B1011023283DF9E100E1E403 /* report.cpp in Sources */,
+				B1011024283DF9E100E1E403 /* core.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

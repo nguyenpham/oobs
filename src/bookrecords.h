@@ -22,7 +22,7 @@
 
 namespace oobs {
 
-const std::string VersionString = "beta 2";
+const std::string VersionString = "beta 3";
 const std::string VersionDatabaseString = "0.1";
 
 class WinDrawLoss {

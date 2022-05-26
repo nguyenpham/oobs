@@ -11,8 +11,8 @@
 #ifndef OOBS_SEARCH_H
 #define OOBS_SEARCH_H
 
-#include "dbread.h"
-#include "pgnread.h"
+#include "ocgdb/dbread.h"
+#include "ocgdb/pgnread.h"
 
 namespace oobs {
 
@@ -26,6 +26,6 @@ protected:
     virtual void runTask() override;
 };
 
-} // namespace ocdb
+} // namespace oobs
 
 #endif /* OOBS_SEARCH_H */

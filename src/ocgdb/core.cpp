@@ -30,9 +30,9 @@ Core::~Core()
 
 void Core::run(const ocgdb::ParaRecord& param)
 {
-    printOut.init((param.optionFlag & query_flag_print_all) && (param.optionFlag & query_flag_print_pgn), param.reportPath);
-
     paraRecord = param;
+    printOut.init(param.optionFlag & query_flag_print_all, param.reportPath);
+
     createPool();
 
     runTask();

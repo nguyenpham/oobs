@@ -15,13 +15,13 @@
 #include <unordered_map>
 #include <fstream>
 
-#include "3rdparty/SQLiteCpp/SQLiteCpp.h"
-#include "3rdparty/threadpool/thread_pool.hpp"
+#include "../3rdparty/SQLiteCpp/SQLiteCpp.h"
+#include "../3rdparty/threadpool/thread_pool.hpp"
 
-#include "board/types.h"
-#include "board/base.h"
+#include "../board/types.h"
+#include "../board/base.h"
 
-#include "bookrecords.h"
+#include "../bookrecords.h"
 
 namespace ocgdb {
 
@@ -39,6 +39,7 @@ enum class Task
     create,
     export_,
     merge,
+    fen,
     query,
     bench,
     none,
@@ -111,7 +112,7 @@ public:
 public:
     bslib::BoardCore *board = nullptr, *board2 = nullptr;
 
-    int64_t errCnt = 0, gameCnt = 0, nodeCnt = 0;
+    int64_t errCnt = 0, gameCnt = 0, nodeCnt = 0, resultCnt = 0;
 };
 
 };

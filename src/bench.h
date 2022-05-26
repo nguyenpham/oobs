@@ -22,6 +22,6 @@ private:
     virtual void runTask() override;
 };
 
-} // namespace ocdb
+} // namespace oobs
 
 #endif /* OOBS_BENCH_H */

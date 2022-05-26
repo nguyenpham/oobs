@@ -56,12 +56,16 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-o printall"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-db /Users/nguyenpham/Downloads/carlsen.ocgdb.db3"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-in /Users/nguyenpham/bsg/BanksiaMatch/db/Carlsen.pgn"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-out /Users/nguyenpham/Downloads/book-carlsen.bin"
@@ -77,7 +81,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-out /Users/nguyenpham/Downloads/book-carlsen.pgn"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-book /Users/nguyenpham/Downloads/book-354.obs.db3"
@@ -96,11 +100,23 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-db /Users/nguyenpham/Downloads/mb-3.45.ocgdb.db3"
+            argument = "-in /Users/nguyenpham/Downloads/mb-3.45.ocgdb.db3"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-db /Users/nguyenpham/Downloads/345.ocgdb.db3"
+            argument = "-in /Users/nguyenpham/Downloads/345.ocgdb.db3"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-in /Users/nguyenpham/Downloads/bookmb-3-45-30.obs.db3"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-in /Users/nguyenpham/Downloads/book-mb-3.45.bin"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-in /Users/nguyenpham/Downloads/bookmb-3-45-30.bin"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -113,7 +129,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-create"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-bench"
@@ -121,10 +137,14 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-plytake 20"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-cpu 4"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-q &quot;Q[e4]&quot;"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -137,7 +157,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-plycount 40"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-gamepernode 3"
@@ -145,7 +165,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-o win=6,loss=-1,draw=2,noresult=draw"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>
