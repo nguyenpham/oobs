@@ -35,6 +35,7 @@
     <ClCompile Include="..\src\board\funcs.cpp" />
     <ClCompile Include="..\src\bookmaker.cpp" />
     <ClCompile Include="..\src\bookrecords.cpp" />
+    <ClCompile Include="..\src\export.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\ocgdb\core.cpp" />
     <ClCompile Include="..\src\ocgdb\dbcore.cpp" />
@@ -70,6 +71,7 @@
     <ClInclude Include="..\src\board\types.h" />
     <ClInclude Include="..\src\bookmaker.h" />
     <ClInclude Include="..\src\bookrecords.h" />
+    <ClInclude Include="..\src\export.h" />
     <ClInclude Include="..\src\ocgdb\core.h" />
     <ClInclude Include="..\src\ocgdb\dbcore.h" />
     <ClInclude Include="..\src\ocgdb\dbread.h" />
