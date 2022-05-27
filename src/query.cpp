@@ -124,9 +124,9 @@ void Query::queryADb(const std::string& dbPath)
             auto c = stmt.getColumn(i);
             std::string name = c.getName();
             theMap[name] = c.getString();
-            pool->submit(doProcessARecord, this, theMap);
         }
-        
+        pool->submit(doProcessARecord, this, theMap);
+
         if (pool->get_tasks_total() > 1024 * 8) {
             pool->wait_for_tasks();
         }
