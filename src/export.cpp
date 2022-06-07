@@ -48,7 +48,7 @@ void Export::runTask()
     }
 
     // clean up
-    if (bookType == bslib::BookType::polyglot) {
+    if (bookType != bslib::BookType::obs) {
         textBookFile.close();
     }
 }

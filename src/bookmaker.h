@@ -62,7 +62,7 @@ protected:
     SQLite::Database* bookDb = nullptr;
 
     std::mutex nodeMapMutex;
-    std::map<uint64_t, oobs::BookNode> nodeMap;
+    std::map<uint64_t, BookNode> nodeMap;
     std::set<std::string> lastEpdSet;
     int randomSavingPly;
 

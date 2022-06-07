@@ -25,6 +25,8 @@ namespace oobs {
 const std::string VersionString = "beta 3";
 const std::string VersionDatabaseString = "0.1";
 
+const uint8_t bookflag_visited = 1 << 0;
+
 class WinDrawLoss {
 public:
     int win = 0, draw = 0, loss = 0;
@@ -59,6 +61,7 @@ public:
 class BookNode {
 public:
     std::string epd;
+    uint8_t flag = 0;
 
     // map move int to BookNodeMove
     std::unordered_map<int, WinDrawLoss> moveMap;

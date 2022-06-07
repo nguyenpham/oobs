@@ -491,6 +491,7 @@ void BookMaker::toBook()
                 << std::endl;
 }
 
+// Visit ech node only one, that may miss some positions but it can gain very high speed
 void BookMaker::toBookPgnEpd(bslib::BoardCore* board, std::set<uint64_t>& vistedSet)
 {
     assert(board);
@@ -498,11 +499,15 @@ void BookMaker::toBookPgnEpd(bslib::BoardCore* board, std::set<uint64_t>& visted
     // check if the position is in the tree and the hit number is accepted
     auto it = nodeMap.find(board->hashKey);
     if (    it == nodeMap.end()
+            || (it->second.flag & bookflag_visited)
             || it->second.hitCount() < paraRecord.minHit
-            || vistedSet.find(board->hashKey) != vistedSet.end()) {
+            || vistedSet.find(board->hashKey) != vistedSet.end()
+        ) {
         return;
     }
 
+    it->second.flag |= bookflag_visited;
+    
     auto n = board->getHistListSize();
     if (n == randomSavingPly) {
         savePgnEpd(board);
